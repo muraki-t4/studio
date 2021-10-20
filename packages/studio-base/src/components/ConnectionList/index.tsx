@@ -28,7 +28,7 @@ const emptyArray: PlayerProblem[] = [];
 const useStyles = makeStyles((theme) => ({
   badge: {
     textTransform: "uppercase",
-    fontSize: theme.fonts.small.fontSize,
+    fontSize: theme.fonts.medium.fontSize,
     fontWeight: 600,
     backgroundColor: theme.palette.themePrimary,
     color: theme.palette.neutralLighterAlt,

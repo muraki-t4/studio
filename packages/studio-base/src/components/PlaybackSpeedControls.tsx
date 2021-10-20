@@ -80,7 +80,7 @@ export default function PlaybackSpeedControls(): JSX.Element {
         styles: {
           subComponentStyles: {
             menuItem: {
-              label: { fontSize: theme.fonts.small.fontSize },
+              label: { fontSize: theme.fonts.medium.fontSize },
               // Reach into the component styles to remove the effects of global.scss
               root: { margin: 0, borderRadius: 0 },
               checkmarkIcon: { "& svg": { marginTop: "-2px" } },
@@ -99,7 +99,7 @@ export default function PlaybackSpeedControls(): JSX.Element {
         rootHovered: {
           background: theme.semanticColors.buttonBackgroundPressed,
         },
-        label: theme.fonts.small,
+        label: theme.fonts.medium,
         menuIcon: {
           fontSize: theme.fonts.tiny.fontSize,
         },

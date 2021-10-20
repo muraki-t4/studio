@@ -70,7 +70,7 @@ export default function CssBaseline(props: PropsWithChildren<unknown>): JSX.Elem
     background: theme.semanticColors.bodyBackground,
     color: theme.semanticColors.bodyText,
     font: "inherit",
-    ...theme.fonts.small,
+    ...theme.fonts.medium,
     fontFeatureSettings: fonts.SANS_SERIF_FEATURE_SETTINGS,
   });
 

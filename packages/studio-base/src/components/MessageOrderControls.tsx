@@ -54,7 +54,7 @@ export default function MessageOrderControls(): JSX.Element {
             background: theme.semanticColors.buttonBackgroundPressed,
           },
           label: {
-            ...theme.fonts.small,
+            ...theme.fonts.medium,
             whiteSpace: "nowrap",
           },
           menuIcon: {

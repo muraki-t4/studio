@@ -48,7 +48,7 @@ import { debugBorder } from "./styles";
 
 const useStyles = makeStyles((theme) => ({
   signInPrompt: {
-    fontSize: theme.fonts.smallPlus.fontSize,
+    fontSize: theme.fonts.medium.fontSize,
     padding: theme.spacing.s1,
     backgroundColor: theme.palette.themeLighterAlt,
     position: "sticky",

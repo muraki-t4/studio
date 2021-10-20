@@ -131,17 +131,6 @@ export const spacing = {
   PLAYBACK_CONTROL_HEIGHT: "50px",
 };
 
-export const textSize = {
-  SMALL: "12px",
-  NORMAL: "14px",
-  LARGE: "16px",
-  H5: "20px",
-  H4: "24px",
-  H3: "32px",
-  H2: "48px",
-  H1: "64px",
-};
-
 export const rounded = {
   SMALL: "2px",
   NORMAL: "4px",

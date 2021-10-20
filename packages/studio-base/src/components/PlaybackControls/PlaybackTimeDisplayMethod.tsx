@@ -230,7 +230,7 @@ const PlaybackTimeDisplayMethod = ({
             padding: theme.spacing.s1,
             minWidth: "50px",
           },
-          label: theme.fonts.small,
+          label: theme.fonts.medium,
           menuIcon: {
             fontSize: theme.fonts.tiny.fontSize,
           },

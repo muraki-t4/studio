@@ -22,7 +22,7 @@ import { colors } from "@foxglove/studio-base/util/sharedStyleConstants";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    ...theme.fonts.smallPlus,
+    ...theme.fonts.medium,
     lineHeight: "1.4",
     backgroundColor: "transparent",
     color: theme.semanticColors.bodySubtext,
@@ -35,23 +35,23 @@ const useStyles = makeStyles((theme) => ({
       },
     },
     h1: {
-      ...theme.fonts.xxLarge,
+      ...theme.fonts.superLarge,
       marginBottom: theme.spacing.s1,
       fontWeight: 500,
     },
     h2: {
-      ...theme.fonts.xLarge,
+      ...theme.fonts.xxLarge,
       marginBottom: theme.spacing.s1,
       fontWeight: 500,
     },
     h3: {
-      ...theme.fonts.large,
+      ...theme.fonts.xLarge,
       marginBottom: theme.spacing.s1,
       color: colors.TEXT_MUTED,
       fontWeight: 500,
     },
     "h4, h5, h6": {
-      ...theme.fonts.mediumPlus,
+      ...theme.fonts.large,
       marginBottom: theme.spacing.s2,
       color: colors.TEXT_MUTED,
       fontWeight: 500,

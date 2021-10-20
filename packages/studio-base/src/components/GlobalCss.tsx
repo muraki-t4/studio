@@ -148,7 +148,7 @@ export default function GlobalCss(): JSX.Element {
       background: theme.semanticColors.bodyBackground,
       color: theme.semanticColors.bodyText,
       font: "inherit",
-      ...theme.fonts.small,
+      ...theme.fonts.medium,
     },
     ":global(#root)": {
       height: "100%",

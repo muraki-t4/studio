@@ -13,7 +13,7 @@
 
 import styled from "styled-components";
 
-import { colors, textSize, rounded, fonts } from "@foxglove/studio-base/util/sharedStyleConstants";
+import { colors, rounded, fonts } from "@foxglove/studio-base/util/sharedStyleConstants";
 
 const SKeyboardShortcut = styled.div`
   padding: 4px 0;
@@ -33,7 +33,7 @@ const SKeyWrapper = styled.div`
   color: ${colors.GRAY};
   border: 1px solid ${colors.DARK9};
   border-radius: ${rounded.SMALL};
-  font-size: ${textSize.SMALL};
+  font-size: "11px";
   font-weight: 500;
   min-width: 20px;
   align-items: center;

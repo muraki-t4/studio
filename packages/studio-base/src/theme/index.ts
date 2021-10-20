@@ -29,6 +29,21 @@ export default createTheme({
     fontFamily: fonts.SANS_SERIF,
     fontFeatureSettings: fonts.SANS_SERIF_FEATURE_SETTINGS,
   },
+  fonts: {
+    tiny: { fontSize: "9px", fontWeight: 400 },
+    xSmall: { fontSize: "9px", fontWeight: 400 }, // do not use
+    small: { fontSize: "11px", fontWeight: 400 },
+    smallPlus: { fontSize: "11px", fontWeight: 400 }, // do not use
+    medium: { fontSize: "13px", fontWeight: 400 },
+    mediumPlus: { fontSize: "13px", fontWeight: 400 }, // do not use
+    large: { fontSize: "16px", fontWeight: 400 },
+    xLarge: { fontSize: "20px", fontWeight: 600 },
+    xLargePlus: { fontSize: "20px", fontWeight: 600 }, // deprecated
+    xxLarge: { fontSize: "24px", fontWeight: 600 },
+    xxLargePlus: { fontSize: "24px", fontWeight: 600 }, // deprecated
+    superLarge: { fontSize: "28px", fontWeight: 600 },
+    mega: { fontSize: "68px", fontWeight: 600 },
+  },
   semanticColors: {
     menuBackground: "#242429",
     menuItemBackgroundHovered: "#2e2e39",

@@ -57,7 +57,7 @@ const classes = mergeStyleSets({
 
     td: {
       border: "none",
-      padding: "1px 3px",
+      padding: "2px 4px",
     },
     "td, th": {
       lineHeight: "1.3em",
@@ -69,8 +69,7 @@ const classes = mergeStyleSets({
   sectionHeader: {
     color: colors.HIGHLIGHT,
     textAlign: "center !important",
-    fontSize: "1.2em",
-    padding: 4,
+    padding: "10px",
     cursor: "pointer",
     border: "none",
   },

@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.neutralLighterAlt,
   },
   stack: {
-    fontSize: theme.fonts.small.fontSize,
+    fontSize: theme.fonts.medium.fontSize,
     marginLeft: theme.spacing.m,
     lineHeight: "1.3em",
   },

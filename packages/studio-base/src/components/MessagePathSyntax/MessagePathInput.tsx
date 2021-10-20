@@ -628,8 +628,8 @@ export default React.memo<MessagePathInputBaseProps>(function MessagePathInput(
                   subComponentStyles: {
                     menuItem: {
                       root: { height: 24 },
-                      label: { fontSize: theme.fonts.small.fontSize },
-                      secondaryText: { fontSize: theme.fonts.small.fontSize },
+                      label: { fontSize: theme.fonts.medium.fontSize },
+                      secondaryText: { fontSize: theme.fonts.medium.fontSize },
                     },
                   },
                 }),
