@@ -68,10 +68,7 @@ export default function AccountInfo(props: { currentUser?: User }): JSX.Element 
           />
           <Stack verticalAlign="center" tokens={{ childrenGap: theme.spacing.s2 }}>
             <Text variant="medium">{props.currentUser.email ?? "(no email address)"}</Text>
-            <Text
-              variant="smallPlus"
-              styles={{ root: { color: theme.semanticColors.bodySubtext } }}
-            >
+            <Text variant="medium" styles={{ root: { color: theme.semanticColors.bodySubtext } }}>
               {props.currentUser.orgDisplayName ?? props.currentUser.orgSlug}
             </Text>
           </Stack>

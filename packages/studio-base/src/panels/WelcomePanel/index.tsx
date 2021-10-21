@@ -94,7 +94,7 @@ function WelcomePanel() {
           source.
         </p>
         <Text
-          variant="smallPlus"
+          variant="medium"
           styles={{
             root: {
               display: "block",

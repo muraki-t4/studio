@@ -140,7 +140,7 @@ function LayoutToolbar({
           tokens={{ childrenGap: theme.spacing.s1 }}
         >
           {measuringElRef.current && (
-            <Text variant="small" styles={{ root: { fontFamily: fonts.MONOSPACE } }}>
+            <Text variant="medium" styles={{ root: { fontFamily: fonts.MONOSPACE } }}>
               {measuringElRef.current?.measureDistance}
             </Text>
           )}

@@ -80,7 +80,7 @@ function ExperimentalFeatureItem(props: { feature: Feature }) {
                 {feature.name}
               </Text>
               <Text
-                variant="smallPlus"
+                variant="medium"
                 styles={{
                   root: {
                     color: theme.semanticColors.bodySubtext,
