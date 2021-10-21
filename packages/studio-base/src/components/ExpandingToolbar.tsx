@@ -52,15 +52,7 @@ type Props<T extends string> = {
 
 const iconStyles = {
   iconChecked: { color: colors.ACCENT },
-  icon: {
-    color: "white",
-
-    svg: {
-      fill: "currentColor",
-      height: "1em",
-      width: "1em",
-    },
-  },
+  icon: { color: "white" },
 } as Partial<IButtonStyles>;
 
 export default function ExpandingToolbar<T extends string>({

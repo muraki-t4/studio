@@ -131,11 +131,11 @@ export default function ConnectionList(): JSX.Element {
                   // a lower opacity makes the option look disabled to avoid drawing attention
                   opacity: source.disabledReason != undefined ? 0.5 : 1,
                 },
+                icon: {
+                  margin: `0 ${theme.spacing.s1} 0 0`,
+                },
               }}
-              iconProps={{
-                iconName,
-                styles: { root: { "& span": { verticalAlign: "baseline" } } },
-              }}
+              iconProps={{ iconName }}
               onClick={() => onSourceClick(source)}
             >
               {source.name}

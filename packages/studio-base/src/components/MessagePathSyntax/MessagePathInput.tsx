@@ -235,16 +235,7 @@ const iconButtonStyles = {
   rootCheckedPressed: { backgroundColor: colors.DARK2 },
   iconHovered: { color: "inherit" },
   iconChecked: { color: "inherit" },
-  icon: {
-    color: "inherit",
-
-    svg: {
-      height: "1em",
-      width: "1em",
-      display: "block",
-      fill: "currentColor",
-    },
-  },
+  icon: { color: "inherit" },
 } as Partial<IButtonStyles>;
 
 const dropdownStyles = {
@@ -276,13 +267,6 @@ const dropdownStyles = {
     height: "1em",
     color: "inherit",
     marginLeft: 0,
-
-    svg: {
-      fill: "currentColor",
-      height: "1em",
-      width: "1em",
-      display: "block",
-    },
   },
 } as Partial<IButtonStyles>;
 

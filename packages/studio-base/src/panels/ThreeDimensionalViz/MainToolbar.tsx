@@ -29,15 +29,7 @@ const iconButtonStyles = {
   rootCheckedPressed: { backgroundColor: "transparent" },
 
   iconChecked: { color: colors.HIGHLIGHT },
-  icon: {
-    color: "white",
-
-    svg: {
-      fill: "currentColor",
-      height: "1em",
-      width: "1em",
-    },
-  },
+  icon: { color: "white" },
 } as Partial<IButtonStyles>;
 
 function MainToolbar({

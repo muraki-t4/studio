@@ -95,15 +95,7 @@ export default function TopicTreeSwitcher({
           rootCheckedHovered: { backgroundColor: "transparent" },
           rootCheckedPressed: { backgroundColor: "transparent" },
           iconChecked: { color: colors.HIGHLIGHT },
-          icon: {
-            color: colors.LIGHT1,
-
-            svg: {
-              fill: "currentColor",
-              height: "1em",
-              width: "1em",
-            },
-          },
+          icon: { color: colors.LIGHT1 },
         }}
       />
       <IconButton
@@ -124,15 +116,7 @@ export default function TopicTreeSwitcher({
           rootPressed: { backgroundColor: colors.DARK3 },
           rootDisabled: { backgroundColor: colors.DARK3 },
           iconChecked: { color: colors.ACCENT },
-          icon: {
-            color: "white",
-
-            svg: {
-              fill: "currentColor",
-              height: "1em",
-              width: "1em",
-            },
-          },
+          icon: { color: "white" },
         }}
       />
     </div>

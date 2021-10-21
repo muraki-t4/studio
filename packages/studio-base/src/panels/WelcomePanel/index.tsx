@@ -22,9 +22,6 @@ function validateEmail(str: string | undefined): string | undefined {
 const iconStyles: IIconStyles = {
   root: {
     svg: {
-      fill: "currentColor",
-      width: "1em",
-      height: "1em",
       marginBottom: "-0.2em",
     },
   },

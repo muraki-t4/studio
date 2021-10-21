@@ -210,18 +210,6 @@ export const useSearchMatches = ({
   ]);
 };
 
-const iconStyle = {
-  icon: {
-    color: "white",
-
-    svg: {
-      fill: "currentColor",
-      height: "1em",
-      width: "1em",
-    },
-  },
-} as Partial<IButtonStyles>;
-
 const arrowButtonStyles = {
   icon: { height: 18, fontSize: 10 },
   root: { backgroundColor: "transparent", width: 18 },
@@ -290,7 +278,7 @@ const SearchText = React.memo<SearchTextComponentProps>(function SearchText({
             rootHovered: { backgroundColor: colors.DARK3 },
             rootPressed: { backgroundColor: colors.DARK3 },
             rootDisabled: { backgroundColor: colors.DARK3 },
-            ...iconStyle,
+            icon: { color: "white" },
           }}
         />
       </div>
@@ -326,13 +314,6 @@ const SearchText = React.memo<SearchTextComponentProps>(function SearchText({
             left: theme.spacing.s1,
             right: "auto",
             fontSize: 18,
-            ...iconStyle,
-
-            svg: {
-              fill: "currentColor",
-              height: "1em",
-              width: "1em",
-            },
           },
           field: {
             padding: `0 ${theme.spacing.s1} 0 ${theme.spacing.l2}`,
@@ -381,7 +362,7 @@ const SearchText = React.memo<SearchTextComponentProps>(function SearchText({
           rootHovered: { backgroundColor: "transparent" },
           rootPressed: { backgroundColor: "transparent" },
           rootDisabled: { backgroundColor: "transparent" },
-          ...iconStyle,
+          icon: { color: "white" },
         }}
       />
     </Stack>

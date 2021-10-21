@@ -43,15 +43,7 @@ const iconButtonStyles = {
   rootCheckedHovered: { backgroundColor: "transparent" },
   rootCheckedPressed: { backgroundColor: "transparent" },
   iconChecked: { color: colors.HIGHLIGHT },
-  icon: {
-    color: "white",
-
-    svg: {
-      fill: "currentColor",
-      height: "1em",
-      width: "1em",
-    },
-  },
+  icon: { color: "white" },
 } as Partial<IButtonStyles>;
 
 const treeNodeToTfId = (node: TfTreeNode) => node.tf.id;

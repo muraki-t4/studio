@@ -2,12 +2,15 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 import {
+  IButtonStyles,
   IContextualMenuStyles,
   IContextualMenuItemStyles,
+  IIconStyles,
   ILayerStyles,
   IOverlayStyles,
   IModalStyles,
   IComboBoxStyles,
+  ITheme,
   ITooltipStyles,
   ITooltipStyleProps,
   IColorPickerStyles,
@@ -22,6 +25,18 @@ import { createTheme } from "@fluentui/theme";
 import { colors, fonts } from "@foxglove/studio-base/util/sharedStyleConstants";
 
 const THEME_HUE = 247;
+
+const iconStyles = (theme: ITheme) => ({
+  fontSize: theme.fonts.large.fontSize,
+  lineHeight: theme.fonts.large.fontSize,
+  height: theme.fonts.large.fontSize,
+
+  svg: {
+    fill: "currentColor",
+    height: "1em",
+    width: "1em",
+  },
+});
 
 // https://aka.ms/themedesigner
 export default createTheme({
@@ -155,6 +170,32 @@ export default createTheme({
           borderWidth: 2,
         },
       } as Partial<ISpinnerStyles>,
+    },
+    Icon: {
+      styles: ({ theme }): Partial<IIconStyles> => ({ root: iconStyles(theme) }),
+    },
+    IconButton: {
+      styles: ({ theme }): Partial<IButtonStyles> => ({ icon: iconStyles(theme) }),
+    },
+    Button: {
+      styles: ({ theme }): Partial<IButtonStyles> => ({
+        icon: iconStyles(theme),
+        menuIcon: iconStyles(theme),
+      }),
+    },
+    ActionButton: {
+      styles: ({ theme }): Partial<IButtonStyles> => ({
+        icon: {
+          ...iconStyles(theme),
+          "> span": { verticalAlign: "baseline" },
+        },
+      }),
+    },
+    CommandBarButton: {
+      styles: ({ theme }): Partial<IButtonStyles> => ({ icon: iconStyles(theme) }),
+    },
+    SplitButton: {
+      styles: ({ theme }): Partial<IButtonStyles> => ({ icon: iconStyles(theme) }),
     },
   },
   isInverted: true,
