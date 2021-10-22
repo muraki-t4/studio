@@ -2,6 +2,7 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
+import { Button } from "@mui/material";
 import { captureException } from "@sentry/core";
 import { Component, ErrorInfo, PropsWithChildren, ReactNode } from "react";
 
@@ -10,14 +11,14 @@ import { AppError } from "@foxglove/studio-base/util/errors";
 import ErrorDisplay from "./ErrorDisplay";
 
 type Props = {
-  actions?: JSX.Element;
+  onRemovePanel: () => void;
 };
 
 type State = {
   currentError: { error: Error; errorInfo: ErrorInfo } | undefined;
 };
 
-export default class ErrorBoundary extends Component<PropsWithChildren<Props>, State> {
+export default class PanelErrorBoundary extends Component<PropsWithChildren<Props>, State> {
   override state: State = {
     currentError: undefined,
   };
@@ -31,10 +32,15 @@ export default class ErrorBoundary extends Component<PropsWithChildren<Props>, S
     if (this.state.currentError) {
       return (
         <ErrorDisplay
+          title="The panel encountered an unexpected error"
           error={this.state.currentError?.error}
           errorInfo={this.state.currentError?.errorInfo}
           onDismiss={() => this.setState({ currentError: undefined })}
-          actions={this.props.actions}
+          actions={
+            <Button variant="outlined" color="error" onClick={this.props.onRemovePanel}>
+              Remove Panel
+            </Button>
+          }
         />
       );
     }
