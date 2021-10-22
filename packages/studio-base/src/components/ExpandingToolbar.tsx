@@ -130,7 +130,7 @@ export default function ExpandingToolbar<T extends string>({
             paddingRight: theme.spacing.l2,
           },
           link: {
-            fontSize: theme.fonts.small.fontSize,
+            fontSize: theme.fonts.medium.fontSize,
             marginRight: 0,
             height: 32,
           },
