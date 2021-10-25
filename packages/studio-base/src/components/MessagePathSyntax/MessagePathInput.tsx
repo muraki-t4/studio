@@ -263,9 +263,6 @@ const dropdownStyles = {
   rootPressed: { backgroundColor: "transparent" },
   label: { fontWeight: 400 },
   menuIcon: {
-    fontSize: "1em",
-    height: "1em",
-    color: "inherit",
     marginLeft: 0,
   },
 } as Partial<IButtonStyles>;

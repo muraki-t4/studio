@@ -177,12 +177,6 @@ export default createTheme({
     IconButton: {
       styles: ({ theme }): Partial<IButtonStyles> => ({ icon: iconStyles(theme) }),
     },
-    Button: {
-      styles: ({ theme }): Partial<IButtonStyles> => ({
-        icon: iconStyles(theme),
-        menuIcon: iconStyles(theme),
-      }),
-    },
     ActionButton: {
       styles: ({ theme }): Partial<IButtonStyles> => ({
         icon: {
@@ -193,6 +187,18 @@ export default createTheme({
     },
     CommandBarButton: {
       styles: ({ theme }): Partial<IButtonStyles> => ({ icon: iconStyles(theme) }),
+    },
+    DefaultButton: {
+      styles: ({ theme }): Partial<IButtonStyles> => ({
+        icon: iconStyles(theme),
+        menuIcon: iconStyles(theme),
+      }),
+    },
+    PrimaryButton: {
+      styles: ({ theme }): Partial<IButtonStyles> => ({
+        icon: iconStyles(theme),
+        menuIcon: iconStyles(theme),
+      }),
     },
     SplitButton: {
       styles: ({ theme }): Partial<IButtonStyles> => ({ icon: iconStyles(theme) }),
