@@ -3,22 +3,22 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 import {
   IButtonStyles,
-  IContextualMenuStyles,
+  IColorPickerStyles,
+  IComboBoxStyles,
   IContextualMenuItemStyles,
+  IContextualMenuStyles,
   IIconStyles,
   ILayerStyles,
-  IOverlayStyles,
   IModalStyles,
-  IComboBoxStyles,
-  ITheme,
-  ITooltipStyles,
-  ITooltipStyleProps,
-  IColorPickerStyles,
-  IToggleStyles,
-  ISpinnerStyles,
+  IOverlayStyles,
   IPalette,
-  hsl2rgb,
+  ISpinnerStyles,
+  ITheme,
+  IToggleStyles,
+  ITooltipStyleProps,
+  ITooltipStyles,
   getColorFromRGBA,
+  hsl2rgb,
 } from "@fluentui/react";
 import { createTheme } from "@fluentui/theme";
 
