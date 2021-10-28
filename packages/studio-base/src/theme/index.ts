@@ -6,7 +6,6 @@ import {
   IColorPickerStyles,
   IComboBoxStyles,
   IContextualMenuItemStyles,
-  IContextualMenuStyles,
   IIconStyles,
   ILayerStyles,
   IModalStyles,
@@ -35,6 +34,9 @@ const iconStyles = (theme: ITheme) => ({
     fill: "currentColor",
     height: "1em",
     width: "1em",
+  },
+  "> span": {
+    verticalAlign: "baseline",
   },
 });
 
@@ -82,18 +84,11 @@ export default createTheme({
         },
       } as IColorPickerStyles,
     },
-    ContextualMenu: {
-      styles: {
-        subComponentStyles: {
-          menuItem: {
-            // Improve menu item icon/text alignment - this may not be necessary if we choose a
-            // different font in the future.
-            icon: {
-              marginTop: -4,
-            },
-          } as Partial<IContextualMenuItemStyles>,
-        },
-      } as IContextualMenuStyles,
+    ContextualMenuItem: {
+      styles: ({ theme }): Partial<IContextualMenuItemStyles> => ({
+        icon: iconStyles(theme),
+        subMenuIcon: iconStyles(theme),
+      }),
     },
     Overlay: {
       styles: {

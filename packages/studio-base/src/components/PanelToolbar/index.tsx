@@ -206,7 +206,6 @@ function PanelActionsDropdown({
         onClick: openSettings,
         iconProps: {
           iconName: "ShapeSubtract",
-          styles: { root: { height: 24, marginLeft: 2, marginRight: 6 } },
         },
         subMenuProps: {
           items: [{ key: "dummy" }],
@@ -227,7 +226,6 @@ function PanelActionsDropdown({
           onClick: panelContext?.enterFullscreen,
           iconProps: {
             iconName: "FullScreenMaximize",
-            styles: { root: { height: 24, marginLeft: 2, marginRight: 6 } },
           },
         },
         {
@@ -236,7 +234,6 @@ function PanelActionsDropdown({
           onClick: () => split(panelContext?.id, "column"),
           iconProps: {
             iconName: "SplitHorizontal",
-            styles: { root: { height: 24, marginLeft: 2, marginRight: 6 } },
           },
         },
         {
@@ -245,7 +242,6 @@ function PanelActionsDropdown({
           onClick: () => split(panelContext?.id, "row"),
           iconProps: {
             iconName: "SplitVertical",
-            styles: { root: { height: 24, marginLeft: 2, marginRight: 6 } },
           },
         },
       );
