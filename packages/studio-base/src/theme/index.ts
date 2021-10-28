@@ -84,12 +84,6 @@ export default createTheme({
         },
       } as IColorPickerStyles,
     },
-    ContextualMenuItem: {
-      styles: ({ theme }): Partial<IContextualMenuItemStyles> => ({
-        icon: iconStyles(theme),
-        subMenuIcon: iconStyles(theme),
-      }),
-    },
     Overlay: {
       styles: {
         root: {
@@ -166,6 +160,12 @@ export default createTheme({
         },
       } as Partial<ISpinnerStyles>,
     },
+    ContextualMenuItem: {
+      styles: ({ theme }): Partial<IContextualMenuItemStyles> => ({
+        icon: iconStyles(theme),
+        subMenuIcon: iconStyles(theme),
+      }),
+    },
     Icon: {
       styles: ({ theme }): Partial<IIconStyles> => ({ root: iconStyles(theme) }),
     },
@@ -173,12 +173,7 @@ export default createTheme({
       styles: ({ theme }): Partial<IButtonStyles> => ({ icon: iconStyles(theme) }),
     },
     ActionButton: {
-      styles: ({ theme }): Partial<IButtonStyles> => ({
-        icon: {
-          ...iconStyles(theme),
-          "> span": { verticalAlign: "baseline" },
-        },
-      }),
+      styles: ({ theme }): Partial<IButtonStyles> => ({ icon: iconStyles(theme) }),
     },
     CommandBarButton: {
       styles: ({ theme }): Partial<IButtonStyles> => ({ icon: iconStyles(theme) }),
