@@ -16,7 +16,7 @@ import { ReactElement, useCallback, useEffect, useRef } from "react";
 type KeyHandlers = Record<string, (event: KeyboardEvent) => void>;
 
 type Props = {
-  global?: true | false;
+  global?: boolean;
   keyDownHandlers?: KeyHandlers;
   keyPressHandlers?: KeyHandlers;
   keyUpHandlers?: KeyHandlers;
