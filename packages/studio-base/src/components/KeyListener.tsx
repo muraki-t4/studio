@@ -11,84 +11,80 @@
 //   found at http://www.apache.org/licenses/LICENSE-2.0
 //   You may not use this file except in compliance with the License.
 
-type KeyHandlers = {
-  [key: string]: (event: KeyboardEvent) => void;
-};
+import { ReactElement, useCallback, useEffect, useRef } from "react";
+
+type KeyHandlers = Record<string, (event: KeyboardEvent) => void>;
 
 type Props = {
-  global: true | false;
+  global?: true | false;
   keyDownHandlers?: KeyHandlers;
   keyPressHandlers?: KeyHandlers;
   keyUpHandlers?: KeyHandlers;
 };
 
-export default class KeyListener extends React.Component<Props> {
-  el?: HTMLDivElement;
+function callHandlers(handlers: KeyHandlers | undefined, event: KeyboardEvent) {
+  if (!handlers) {
+    return;
+  }
 
-  static defaultProps = {
-    global: false,
-  };
+  if (typeof handlers[event.key] === "function") {
+    event.preventDefault();
+    handlers[event.key]?.(event);
+  }
+}
 
-  override componentDidMount(): void {
-    const { global } = this.props;
-    const target = global ? document : this.el?.parentElement;
+export default function KeyListener(props: Props): ReactElement {
+  const { global = false } = props;
+  const el = useRef<HTMLDivElement>(ReactNull);
+
+  const handleEvent = useCallback(
+    (event: Event) => {
+      if (!(event instanceof KeyboardEvent)) {
+        return;
+      }
+      const { target, type } = event;
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        (target instanceof HTMLElement && target.isContentEditable)
+      ) {
+        // The user is typing in an editable field; ignore the event.
+        return;
+      }
+
+      switch (type) {
+        case "keydown":
+          callHandlers(props.keyDownHandlers, event);
+          break;
+        case "keypress":
+          callHandlers(props.keyPressHandlers, event);
+          break;
+        case "keyup":
+          callHandlers(props.keyUpHandlers, event);
+          break;
+        default:
+          break;
+      }
+    },
+    [props],
+  );
+
+  useEffect(() => {
+    const target = global ? document : el.current?.parentElement;
     if (target) {
-      target.addEventListener("keydown", this.handleEvent);
-      target.addEventListener("keypress", this.handleEvent);
-      target.addEventListener("keyup", this.handleEvent);
-    }
-  }
-
-  override componentWillUnmount(): void {
-    const { global } = this.props;
-    const target = global ? document : this.el?.parentElement;
-    if (target) {
-      target.removeEventListener("keydown", this.handleEvent);
-      target.removeEventListener("keypress", this.handleEvent);
-      target.removeEventListener("keyup", this.handleEvent);
-    }
-  }
-
-  callHandlers(handlers: KeyHandlers | undefined, event: KeyboardEvent): void {
-    if (!handlers) {
-      return;
-    }
-    if (typeof handlers[event.key] === "function") {
-      event.preventDefault();
-      handlers[event.key]?.(event);
-    }
-  }
-
-  handleEvent = (event: Event): void => {
-    if (!(event instanceof KeyboardEvent)) {
-      return;
-    }
-    const { target, type } = event;
-    if (
-      target instanceof HTMLInputElement ||
-      target instanceof HTMLTextAreaElement ||
-      (target instanceof HTMLElement && target.isContentEditable)
-    ) {
-      // The user is typing in an editable field; ignore the event.
-      return;
+      target.addEventListener("keydown", handleEvent);
+      target.addEventListener("keypress", handleEvent);
+      target.addEventListener("keyup", handleEvent);
     }
 
-    switch (type) {
-      case "keydown":
-        this.callHandlers(this.props.keyDownHandlers, event);
-        break;
-      case "keypress":
-        this.callHandlers(this.props.keyPressHandlers, event);
-        break;
-      case "keyup":
-        this.callHandlers(this.props.keyUpHandlers, event);
-        break;
-      default:
-        break;
-    }
-  };
+    return () => {
+      if (target) {
+        target.removeEventListener("keydown", handleEvent);
+        target.removeEventListener("keypress", handleEvent);
+        target.removeEventListener("keyup", handleEvent);
+      }
+    };
+  }, [global, handleEvent]);
 
-  override render(): JSX.Element {
-    return <div style={{ display: "none" }} ref={(el) => (this.el = el ?? undefined)} />;
-  }
+  return <div style={{ display: "none" }} ref={el} />;
 }
