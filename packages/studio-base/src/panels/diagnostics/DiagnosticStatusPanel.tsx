@@ -113,7 +113,7 @@ function DiagnosticStatusPanel(props: Props) {
 
   return (
     <Flex scroll scrollX col>
-      <PanelToolbar floating helpContent={helpContent} additionalIcons={topicToRenderMenu}>
+      <PanelToolbar helpContent={helpContent} additionalIcons={topicToRenderMenu}>
         <Autocomplete
           placeholder={selectedDisplayName ?? "Select a diagnostic"}
           items={diagnostics.sortedAutocompleteEntries}

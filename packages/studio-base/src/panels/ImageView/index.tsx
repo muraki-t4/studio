@@ -640,14 +640,14 @@ function ImageView(props: Props) {
 
   const toolbar = useMemo(() => {
     return (
-      <PanelToolbar floating={cameraTopic !== ""} helpContent={helpContent}>
+      <PanelToolbar helpContent={helpContent}>
         <div className={classes.controls}>
           {imageTopicDropdown}
           {markerDropdown}
         </div>
       </PanelToolbar>
     );
-  }, [cameraTopic, classes.controls, imageTopicDropdown, markerDropdown]);
+  }, [classes.controls, imageTopicDropdown, markerDropdown]);
 
   const renderBottomBar = () => {
     const canTransformMarkers = canTransformMarkersByTopic(cameraTopic);

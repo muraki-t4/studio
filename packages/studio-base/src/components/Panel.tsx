@@ -87,16 +87,6 @@ const PanelRoot = styled.div<{ fullscreen: boolean; selected: boolean }>`
   right: 0;
   bottom: ${({ fullscreen }) => (fullscreen ? spacing.PLAYBACK_CONTROL_HEIGHT : 0)};
 
-  // To use css to hide/show toolbars on hover we use a global panelToolbar class
-  // because the PanelToolbar component is currently added within each panels render
-  // function rather than handling by the panel HOC
-
-  .panelToolbarHovered {
-    display: none;
-  }
-  :hover .panelToolbarHovered {
-    display: flex;
-  }
   :after {
     content: "";
     top: 0;

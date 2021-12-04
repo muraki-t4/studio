@@ -20,7 +20,6 @@ import HelpCircleOutlineIcon from "@mdi/svg/svg/help-circle-outline.svg";
 import cx from "classnames";
 import { useContext, useState, useCallback, useMemo, useRef } from "react";
 import { MosaicContext, MosaicNode, MosaicWindowContext } from "react-mosaic-component";
-import { useResizeDetector } from "react-resize-detector";
 
 import Icon from "@foxglove/studio-base/components/Icon";
 import PanelContext from "@foxglove/studio-base/components/PanelContext";
@@ -312,8 +311,6 @@ type PanelToolbarControlsProps = Pick<Props, "additionalIcons" | "floating"> & {
   menuOpen: boolean;
   // eslint-disable-next-line @foxglove/no-boolean-parameters
   setMenuOpen: (_: boolean) => void;
-  showControls?: boolean;
-  showPanelName?: boolean;
   isUnknownPanel: boolean;
 };
 
@@ -323,24 +320,13 @@ const PanelToolbarControls = React.memo(function PanelToolbarControls({
   menuOpen,
   setMenuOpen,
   additionalIcons,
-  showControls = false,
-  floating = false,
   isUnknownPanel,
-  showPanelName = false,
 }: PanelToolbarControlsProps) {
   const panelContext = useContext(PanelContext);
   const styles = useStyles();
 
   return (
-    <div
-      style={showControls ? { display: "flex" } : {}}
-      className={cx(styles.iconContainer, {
-        panelToolbarHovered: !floating,
-      })}
-    >
-      {showPanelName && panelContext && (
-        <div className={styles.panelName}>{panelContext.title}</div>
-      )}
+    <div className={styles.iconContainer}>
       {additionalIcons}
       <PanelActionsDropdown
         isOpen={menuOpen}
@@ -438,15 +424,6 @@ export default React.memo<Props>(function PanelToolbar({
     exitFullscreen,
   ]);
 
-  // Use a debounce and 0 refresh rate to avoid triggering a resize observation while handling
-  // and existing resize observation.
-  // https://github.com/maslianok/react-resize-detector/issues/45
-  const { width, ref: sizeRef } = useResizeDetector({
-    handleHeight: false,
-    refreshRate: 0,
-    refreshMode: "debounce",
-  });
-
   if (hideToolbars) {
     return ReactNull;
   }
@@ -456,26 +433,21 @@ export default React.memo<Props>(function PanelToolbar({
   const showToolbar = menuOpen || !!isUnknownPanel;
 
   return (
-    <div ref={sizeRef}>
-      <div
-        className={cx(styles.panelToolbarContainer, {
-          panelToolbarHovered: floating,
-          floating,
-          hasChildren: Boolean(children),
-        })}
-        style={showToolbar ? { display: "flex", backgroundColor } : { backgroundColor }}
-      >
-        {children}
-        <PanelToolbarControls
-          showControls={showToolbar}
-          floating={floating}
-          showPanelName={(width ?? 0) > 360}
-          additionalIcons={additionalIconsWithHelp}
-          isUnknownPanel={!!isUnknownPanel}
-          menuOpen={menuOpen}
-          setMenuOpen={setMenuOpen}
-        />
-      </div>
+    <div
+      className={cx(styles.panelToolbarContainer, {
+        floating,
+        hasChildren: Boolean(children),
+      })}
+      style={showToolbar ? { display: "flex", backgroundColor } : { backgroundColor }}
+    >
+      {children}
+      <PanelToolbarControls
+        floating={floating}
+        additionalIcons={additionalIconsWithHelp}
+        isUnknownPanel={!!isUnknownPanel}
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+      />
     </div>
   );
 });

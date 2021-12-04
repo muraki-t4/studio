@@ -13,7 +13,6 @@
 
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { createGlobalStyle } from "styled-components";
 
 import { HideErrorSourceLocations } from "@foxglove/studio-base/components/ErrorBoundary";
 import MockPanelContextProvider from "@foxglove/studio-base/components/MockPanelContextProvider";
@@ -111,17 +110,10 @@ export const PanelNotFoundLight = Object.assign(PanelNotFound.bind(undefined), {
   parameters: { colorScheme: "light" },
 });
 
-const PanelToolbarShown = createGlobalStyle`
-  .panelToolbarHovered {
-    display: flex !important;
-  }
-`;
-
 export const PanelWithError = (): JSX.Element => {
   return (
     <DndProvider backend={HTML5Backend}>
       <HideErrorSourceLocations.Provider value={true}>
-        <PanelToolbarShown />
         <PanelSetup
           panelCatalog={new MockPanelCatalog()}
           fixture={{ topics: [], datatypes: new Map(), frame: {}, layout: "Sample2!4co6n9d" }}
