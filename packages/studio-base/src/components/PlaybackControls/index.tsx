@@ -13,12 +13,13 @@
 
 import { Stack, IButtonStyles, useTheme, StackItem, makeStyles } from "@fluentui/react";
 import { merge } from "lodash";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import { compare, Time } from "@foxglove/rostime";
 import HoverableIconButton from "@foxglove/studio-base/components/HoverableIconButton";
 import KeyListener from "@foxglove/studio-base/components/KeyListener";
 import MessageOrderControls from "@foxglove/studio-base/components/MessageOrderControls";
+import { useMessagePipeline } from "@foxglove/studio-base/components/MessagePipeline";
 import {
   jumpSeek,
   DIRECTION,
@@ -53,8 +54,19 @@ export default function PlaybackControls({
   const theme = useTheme();
   const styles = useStyles();
   const [repeat, setRepeat] = useState(false);
+  const stopNextFrame = useRef(false);
+
+  useMessagePipeline(
+    useCallback(() => {
+      if (stopNextFrame.current) {
+        stopNextFrame.current = false;
+        pause();
+      }
+    }, [pause]),
+  );
 
   const resumePlay = useCallback(() => {
+    stopNextFrame.current = false;
     const { startTime: start, endTime: end, currentTime: current } = getTimeInfo();
     // if we are at the end, we need to go back to start
     if (current && end && start && compare(current, end) >= 0) {
@@ -68,6 +80,7 @@ export default function PlaybackControls({
   }, []);
 
   const togglePlayPause = useCallback(() => {
+    stopNextFrame.current = false;
     if (isPlaying) {
       pause();
     } else {
@@ -90,10 +103,14 @@ export default function PlaybackControls({
         if (!currentTime) {
           return;
         }
-        seek(jumpSeek(DIRECTION.FORWARD, currentTime, ev));
+        // play forward one frame
+        stopNextFrame.current = true;
+        play();
+
+        // seek(jumpSeek(DIRECTION.FORWARD, currentTime, ev));
       },
     }),
-    [getTimeInfo, seek, togglePlayPause],
+    [getTimeInfo, play, seek, togglePlayPause],
   );
 
   const iconButtonStyles: IButtonStyles = {
