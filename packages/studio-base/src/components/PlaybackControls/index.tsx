@@ -13,7 +13,7 @@
 
 import { Stack, IButtonStyles, useTheme, StackItem, makeStyles } from "@fluentui/react";
 import { merge } from "lodash";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { compare, Time } from "@foxglove/rostime";
 import HoverableIconButton from "@foxglove/studio-base/components/HoverableIconButton";
@@ -56,17 +56,25 @@ export default function PlaybackControls({
   const [repeat, setRepeat] = useState(false);
   const stopNextFrame = useRef(false);
 
+  const [doPause, setDoPause] = useState(0);
+
   useMessagePipeline(
     useCallback(() => {
       if (stopNextFrame.current) {
         stopNextFrame.current = false;
-        pause();
+        setDoPause((old) => old + 1);
       }
-    }, [pause]),
+    }, []),
   );
 
+  useLayoutEffect(() => {
+    void doPause;
+    requestAnimationFrame(() => {
+      pause();
+    });
+  }, [doPause, pause]);
+
   const resumePlay = useCallback(() => {
-    stopNextFrame.current = false;
     const { startTime: start, endTime: end, currentTime: current } = getTimeInfo();
     // if we are at the end, we need to go back to start
     if (current && end && start && compare(current, end) >= 0) {
@@ -105,12 +113,10 @@ export default function PlaybackControls({
         }
         // play forward one frame
         stopNextFrame.current = true;
-        play();
-
-        // seek(jumpSeek(DIRECTION.FORWARD, currentTime, ev));
+        resumePlay();
       },
     }),
-    [getTimeInfo, play, seek, togglePlayPause],
+    [getTimeInfo, resumePlay, seek, togglePlayPause],
   );
 
   const iconButtonStyles: IButtonStyles = {
