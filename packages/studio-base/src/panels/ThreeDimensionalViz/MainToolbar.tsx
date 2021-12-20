@@ -5,14 +5,11 @@
 import { IconButton, IButtonStyles, Stack, useTheme } from "@fluentui/react";
 
 import { useTooltip } from "@foxglove/studio-base/components/Tooltip";
-import MeasuringTool, {
-  MeasureInfo,
-} from "@foxglove/studio-base/panels/ThreeDimensionalViz/MeasuringTool";
+import { IMeasuringTool } from "@foxglove/studio-base/panels/ThreeDimensionalViz/TopicTree/useMeasuringTool";
 import { colors } from "@foxglove/studio-base/util/sharedStyleConstants";
 
 type Props = {
-  measuringTool?: MeasuringTool;
-  measureInfo: MeasureInfo;
+  measuringTool?: IMeasuringTool;
   perspective: boolean;
   debug: boolean;
   onToggleCameraMode: () => void;
@@ -21,13 +18,14 @@ type Props = {
 
 function MainToolbar({
   measuringTool,
-  measureInfo: { measureState },
   debug,
   onToggleCameraMode,
   onToggleDebug,
   perspective = false,
 }: Props) {
   const theme = useTheme();
+
+  const measureState = measuringTool?.measureInfo.measureState;
   const measureActive = measureState === "place-start" || measureState === "place-finish";
 
   const toggleCameraButton = useTooltip({
@@ -90,7 +88,7 @@ function MainToolbar({
       <IconButton
         checked={measureActive}
         disabled={perspective}
-        onClick={measuringTool ? measuringTool.toggleMeasureState : undefined}
+        onClick={() => measuringTool?.toggleMeasureState()}
         elementRef={measuringToolButton.ref}
         iconProps={{ iconName: "Ruler" }}
         styles={iconButtonStyles}

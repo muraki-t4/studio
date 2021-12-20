@@ -15,6 +15,7 @@ import { mergeStyleSets, useTheme } from "@fluentui/react";
 import { groupBy } from "lodash";
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
+import { useLatest } from "react-use";
 import { useDebouncedCallback } from "use-debounce";
 
 import { filterMap } from "@foxglove/den/collection";
@@ -38,22 +39,12 @@ import {
 } from "@foxglove/studio-base/panels/ThreeDimensionalViz/Interactions";
 import useLinkedGlobalVariables from "@foxglove/studio-base/panels/ThreeDimensionalViz/Interactions/useLinkedGlobalVariables";
 import LayoutToolbar from "@foxglove/studio-base/panels/ThreeDimensionalViz/LayoutToolbar";
-import MeasuringTool, {
-  MeasureInfo,
-} from "@foxglove/studio-base/panels/ThreeDimensionalViz/MeasuringTool";
 import SceneBuilder from "@foxglove/studio-base/panels/ThreeDimensionalViz/SceneBuilder";
 import { useSearchText } from "@foxglove/studio-base/panels/ThreeDimensionalViz/SearchText";
 import {
   MarkerMatcher,
   ThreeDimensionalVizContext,
 } from "@foxglove/studio-base/panels/ThreeDimensionalViz/ThreeDimensionalVizContext";
-import TopicSettingsModal from "@foxglove/studio-base/panels/ThreeDimensionalViz/TopicTree/TopicSettingsModal";
-import TopicTree from "@foxglove/studio-base/panels/ThreeDimensionalViz/TopicTree/TopicTree";
-import { TOPIC_DISPLAY_MODES } from "@foxglove/studio-base/panels/ThreeDimensionalViz/TopicTree/constants";
-import useSceneBuilderAndTransformsData from "@foxglove/studio-base/panels/ThreeDimensionalViz/TopicTree/useSceneBuilderAndTransformsData";
-import useTopicTree, {
-  TopicTreeContext,
-} from "@foxglove/studio-base/panels/ThreeDimensionalViz/TopicTree/useTopicTree";
 import TransformsBuilder from "@foxglove/studio-base/panels/ThreeDimensionalViz/TransformsBuilder";
 import UrdfBuilder from "@foxglove/studio-base/panels/ThreeDimensionalViz/UrdfBuilder";
 import World from "@foxglove/studio-base/panels/ThreeDimensionalViz/World";
@@ -82,6 +73,13 @@ import {
   URDF_TOPIC,
 } from "@foxglove/studio-base/util/globalConstants";
 import { getTopicsByTopicName } from "@foxglove/studio-base/util/selectors";
+
+import TopicSettingsModal from "./TopicSettingsModal";
+import TopicTree from "./TopicTree";
+import { TOPIC_DISPLAY_MODES } from "./constants";
+import useMeasuringTool from "./useMeasuringTool";
+import useSceneBuilderAndTransformsData from "./useSceneBuilderAndTransformsData";
+import useTopicTree, { TopicTreeContext } from "./useTopicTree";
 
 type EventName = "onDoubleClick" | "onMouseMove" | "onMouseDown" | "onMouseUp";
 export type ClickedPosition = { clientX: number; clientY: number };
@@ -239,10 +237,6 @@ export default function Layout({
   const { globalVariables, setGlobalVariables } = useGlobalVariables();
   const [debug, setDebug] = useState(false);
   const [showTopicTree, setShowTopicTree] = useState<boolean>(false);
-  const [measureInfo, setMeasureInfo] = useState<MeasureInfo>({
-    measureState: "idle",
-    measurePoints: { start: undefined, end: undefined },
-  });
   const [currentEditingTopic, setCurrentEditingTopic] = useState<Topic | undefined>(undefined);
 
   const searchTextProps = useSearchText();
@@ -255,8 +249,9 @@ export default function Layout({
   } = searchTextProps;
   // used for updating DrawPolygon during mouse move and scenebuilder namespace change.
   const [_, forceUpdate] = useReducer((x: number) => x + 1, 0);
-  const measuringElRef = useRef<MeasuringTool>(ReactNull);
   const [interactionsTabType, setInteractionsTabType] = useState<TabType | undefined>(undefined);
+
+  const measuringTool = useMeasuringTool();
 
   const [selectionState, setSelectionState] = useState<UserSelectionState>({
     clickedObjects: [],
@@ -270,7 +265,10 @@ export default function Layout({
   const [hoveredMarkerMatchers, setHoveredMarkerMatchers] = useState<MarkerMatcher[]>([]);
   const setHoveredMarkerMatchersDebounced = useDebouncedCallback(setHoveredMarkerMatchers, 100);
 
-  const isDrawing = useMemo(() => measureInfo.measureState !== "idle", [measureInfo.measureState]);
+  const isDrawing = useMemo(
+    () => measuringTool.measureInfo.measureState !== "idle",
+    [measuringTool.measureInfo.measureState],
+  );
 
   // initialize the GridBuilder, SceneBuilder, and TransformsBuilder
   const { gridBuilder, sceneBuilder, transformsBuilder, urdfBuilder } = useMemo(
@@ -558,19 +556,20 @@ export default function Layout({
     });
   }, []);
 
+  const latestMeasuringTool = useLatest(measuringTool);
   const handleEvent = useCallback(
-    (eventName: EventName, ev: React.MouseEvent, args?: ReglClickInfo) => {
-      if (!args) {
+    (eventName: EventName, ev: React.MouseEvent, clickInfo?: ReglClickInfo) => {
+      if (!clickInfo) {
         return;
       }
       const measuringHandler =
-        eventName === "onDoubleClick" ? undefined : measuringElRef.current?.[eventName];
-      const measureActive = measuringElRef.current?.measureActive ?? false;
+        eventName === "onDoubleClick" ? undefined : latestMeasuringTool.current?.[eventName];
+      const measureActive = latestMeasuringTool.current?.measureActive ?? false;
       if (measuringHandler && measureActive) {
-        return measuringHandler(ev.nativeEvent, args);
+        return measuringHandler(ev.nativeEvent, clickInfo);
       }
     },
-    [],
+    [latestMeasuringTool],
   );
 
   const updateGlobalVariablesFromSelection = useCallback(
@@ -671,12 +670,12 @@ export default function Layout({
         currentSaveConfig({
           cameraState: { ...currentCameraState, perspective: !currentCameraState.perspective },
         });
-        if (measuringElRef.current && currentCameraState.perspective) {
-          measuringElRef.current.reset();
+        if (currentCameraState.perspective) {
+          measuringTool.reset();
         }
       },
     };
-  }, [handleEvent, selectObject]);
+  }, [handleEvent, measuringTool, selectObject]);
 
   // When the TopicTree is hidden, focus the <World> again so keyboard controls continue to work
   const worldRef = useRef<typeof Worldview | undefined>(ReactNull);
@@ -852,8 +851,7 @@ export default function Layout({
                   followOrientation={followOrientation}
                   followTf={followTf}
                   isPlaying={isPlaying}
-                  measureInfo={measureInfo}
-                  measuringElRef={measuringElRef}
+                  measuringTool={measuringTool}
                   onAlignXYAxis={onAlignXYAxis}
                   onCameraStateChange={onCameraStateChange}
                   autoSyncCameraState={!!autoSyncCameraState}
@@ -862,7 +860,6 @@ export default function Layout({
                   onToggleDebug={toggleDebug}
                   saveConfig={saveConfig}
                   selectedObject={selectedObject}
-                  setMeasureInfo={setMeasureInfo}
                   showCrosshair={showCrosshair}
                   targetPose={targetPose}
                   transforms={transforms}

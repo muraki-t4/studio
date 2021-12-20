@@ -22,13 +22,11 @@ import Interactions from "@foxglove/studio-base/panels/ThreeDimensionalViz/Inter
 import { TabType } from "@foxglove/studio-base/panels/ThreeDimensionalViz/Interactions/Interactions";
 import MainToolbar from "@foxglove/studio-base/panels/ThreeDimensionalViz/MainToolbar";
 import MeasureMarker from "@foxglove/studio-base/panels/ThreeDimensionalViz/MeasureMarker";
-import MeasuringTool, {
-  MeasureInfo,
-} from "@foxglove/studio-base/panels/ThreeDimensionalViz/MeasuringTool";
 import SearchText, {
   SearchTextProps,
 } from "@foxglove/studio-base/panels/ThreeDimensionalViz/SearchText";
 import { LayoutToolbarSharedProps } from "@foxglove/studio-base/panels/ThreeDimensionalViz/TopicTree/Layout";
+import { IMeasuringTool } from "@foxglove/studio-base/panels/ThreeDimensionalViz/TopicTree/useMeasuringTool";
 import { fonts } from "@foxglove/studio-base/util/sharedStyleConstants";
 
 type Props = LayoutToolbarSharedProps &
@@ -36,15 +34,13 @@ type Props = LayoutToolbarSharedProps &
     autoSyncCameraState: boolean;
     debug: boolean;
     interactionsTabType?: TabType;
-    measureInfo: MeasureInfo;
-    measuringElRef: { current: MeasuringTool | ReactNull };
+    measuringTool: IMeasuringTool;
     onToggleCameraMode: () => void;
     onToggleDebug: () => void;
     renderFrameId?: string;
     currentTime: Time;
     selectedObject?: MouseEventObject;
     setInteractionsTabType: (arg0?: TabType) => void;
-    setMeasureInfo: (arg0: MeasureInfo) => void;
     showCrosshair?: boolean;
   };
 
@@ -56,8 +52,7 @@ function LayoutToolbar({
   followTf,
   interactionsTabType,
   isPlaying,
-  measureInfo,
-  measuringElRef,
+  measuringTool,
   onAlignXYAxis,
   onCameraStateChange,
   onFollowChange,
@@ -71,7 +66,6 @@ function LayoutToolbar({
   selectedMatchIndex,
   selectedObject,
   setInteractionsTabType,
-  setMeasureInfo,
   setSearchText,
   setSearchTextMatches,
   setSelectedMatchIndex,
@@ -84,12 +78,6 @@ function LayoutToolbar({
   const theme = useTheme();
   return (
     <>
-      <MeasuringTool
-        ref={measuringElRef}
-        measureState={measureInfo.measureState}
-        measurePoints={measureInfo.measurePoints}
-        onMeasureInfoChange={setMeasureInfo}
-      />
       <Stack
         styles={{
           root: {
@@ -134,14 +122,11 @@ function LayoutToolbar({
           styles={{ root: { position: "relative" } }}
           tokens={{ childrenGap: theme.spacing.s1 }}
         >
-          {measuringElRef.current && (
-            <Text variant="small" styles={{ root: { fontFamily: fonts.MONOSPACE } }}>
-              {measuringElRef.current?.measureDistance}
-            </Text>
-          )}
+          <Text variant="small" styles={{ root: { fontFamily: fonts.MONOSPACE } }}>
+            {measuringTool?.measureDistance}
+          </Text>
           <MainToolbar
-            measureInfo={measureInfo}
-            measuringTool={measuringElRef.current ?? undefined}
+            measuringTool={measuringTool}
             perspective={cameraState.perspective}
             debug={debug}
             onToggleCameraMode={onToggleCameraMode}
@@ -166,7 +151,7 @@ function LayoutToolbar({
         />
       </Stack>
       {!cameraState.perspective && showCrosshair && <Crosshair cameraState={cameraState} />}
-      <MeasureMarker measurePoints={measureInfo.measurePoints} />
+      <MeasureMarker measurePoints={measuringTool.measureInfo.measurePoints} />
     </>
   );
 }
