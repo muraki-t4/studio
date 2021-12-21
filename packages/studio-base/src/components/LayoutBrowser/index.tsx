@@ -18,6 +18,7 @@ import { useTooltip } from "@foxglove/studio-base/components/Tooltip";
 import { useAnalytics } from "@foxglove/studio-base/context/AnalyticsContext";
 import ConsoleApiContext from "@foxglove/studio-base/context/ConsoleApiContext";
 import {
+  LayoutState,
   useCurrentLayoutActions,
   useCurrentLayoutSelector,
 } from "@foxglove/studio-base/context/CurrentLayoutContext";
@@ -38,6 +39,8 @@ import LayoutSection from "./LayoutSection";
 import helpContent from "./index.help.md";
 import { debugBorder } from "./styles";
 
+const selectedLayoutIdSelector = (state: LayoutState) => state.selectedLayout?.id;
+
 export default function LayoutBrowser({
   currentDateForStorybook,
 }: React.PropsWithChildren<{
@@ -52,7 +55,7 @@ export default function LayoutBrowser({
   const confirm = useConfirm();
   const { unsavedChangesPrompt, openUnsavedChangesPrompt } = useUnsavedChangesPrompt();
 
-  const currentLayoutId = useCurrentLayoutSelector((state) => state.selectedLayout?.id);
+  const currentLayoutId = useCurrentLayoutSelector(selectedLayoutIdSelector);
   const { setSelectedLayoutId } = useCurrentLayoutActions();
 
   const [isBusy, setIsBusy] = useState(layoutManager.isBusy);
