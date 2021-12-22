@@ -19,15 +19,26 @@ import { renderImage } from "./renderImage";
 import { Dimensions, RawMarkerData, RenderOptions } from "./util";
 
 class ImageCanvasWorker {
-  private _idToCanvas: {
-    [key: string]: OffscreenCanvas;
-  } = {};
+  private _idToCanvas: Record<string, OffscreenCanvas> = {};
 
   constructor(rpc: Rpc) {
     setupWorker(rpc);
 
     rpc.receive("initialize", async ({ id, canvas }: { id: string; canvas: OffscreenCanvas }) => {
       this._idToCanvas[id] = canvas;
+    });
+
+    rpc.receive("mouseMove", async ({ id, x, y }: { id: string; x: number; y: number }) => {
+      const pixel = this._idToCanvas[id]?.getContext("2d")?.getImageData(x, y, 1, 1);
+      if (pixel) {
+        return {
+          color: { r: pixel.data[0], g: pixel.data[1], b: pixel.data[2], a: pixel.data[3] },
+          position: { x, y },
+          markerID: undefined,
+        };
+      } else {
+        return undefined;
+      }
     });
 
     rpc.receive(

@@ -19,7 +19,7 @@ import MenuDownIcon from "@mdi/svg/svg/menu-down.svg";
 import WavesIcon from "@mdi/svg/svg/waves.svg";
 import cx from "classnames";
 import { last, uniq } from "lodash";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { filterMap } from "@foxglove/den/collection";
 import { useShallowMemo } from "@foxglove/hooks";
@@ -48,6 +48,7 @@ import toggle from "@foxglove/studio-base/util/toggle";
 
 import ImageCanvas from "./ImageCanvas";
 import ImageEmptyState from "./ImageEmptyState";
+import { PixelDataTooltip } from "./PixelDataTooltip";
 import helpContent from "./index.help.md";
 import {
   getCameraInfoTopic,
@@ -55,6 +56,7 @@ import {
   getRelatedMarkerTopics,
   getMarkerOptions,
   groupTopics,
+  PixelData,
 } from "./util";
 
 const { useMemo, useCallback } = React;
@@ -275,6 +277,7 @@ function ImageView(props: Props) {
     () => getTopicsByTopicName(topics)[cameraTopic],
     [cameraTopic, topics],
   );
+  const [activePixelData, setActivePixelData] = useState<PixelData | undefined>();
 
   // Namespaces represent marker topics based on the camera topic prefix (e.g. "/camera_front_medium")
   const { allCameraNamespaces, imageTopicsByNamespace, allImageTopics } = useMemo(() => {
@@ -644,6 +647,7 @@ function ImageView(props: Props) {
             config={config}
             saveConfig={saveConfig}
             onStartRenderImage={onStartRenderImage}
+            setActivePixelData={setActivePixelData}
           />
         )}
         {/* If rendered, EmptyState will hide the always-present ImageCanvas */}
@@ -657,6 +661,7 @@ function ImageView(props: Props) {
             />
           </div>
         )}
+        {activePixelData && <PixelDataTooltip data={activePixelData} />}
         {!showEmptyState && renderBottomBar()}
       </div>
     </Flex>

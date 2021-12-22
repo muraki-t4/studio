@@ -28,6 +28,12 @@ export type RenderOptions = {
 
 export type Dimensions = { width: number; height: number };
 
+export type PixelData = {
+  color: { r: number; g: number; b: number; a: number };
+  position: { x: number; y: number };
+  markerID?: number;
+};
+
 export type RawMarkerData = {
   markers: MessageEvent<unknown>[];
   transformMarkers: boolean;
