@@ -29,7 +29,10 @@ export default {
 export const Default: Story = () => {
   return (
     <DndProvider backend={HTML5Backend}>
-      <PanelErrorBoundary onRemovePanel={action("onRemovePanel")}>
+      <PanelErrorBoundary
+        onRemovePanel={action("onRemovePanel")}
+        onResetPanel={action("onResetPanel")}
+      >
         <Broken />
       </PanelErrorBoundary>
     </DndProvider>

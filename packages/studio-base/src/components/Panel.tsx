@@ -305,6 +305,10 @@ export default function Panel<
     const defaultConfig = PanelComponent.defaultConfig;
     const [savedConfig, saveConfig] = useConfigById<Config>(childId);
 
+    const resetPanel = useCallback(() => {
+      saveConfig(defaultConfig);
+    }, [defaultConfig, saveConfig]);
+
     // PanelSettings needs useConfigById to return a config
     // If there is no saved config (or it is an empty object), we save the default config provided
     // by the panel. This typically happens when a new panel is added and the layout does not yet
@@ -678,7 +682,7 @@ export default function Panel<
                 </div>
               </ActionsOverlay>
             )}
-            <PanelErrorBoundary onRemovePanel={removePanel}>
+            <PanelErrorBoundary onRemovePanel={removePanel} onResetPanel={resetPanel}>
               {PanelComponent.supportsStrictMode ?? true ? (
                 <React.StrictMode>{child}</React.StrictMode>
               ) : (
