@@ -16,10 +16,11 @@ import Rpc, { Channel } from "@foxglove/studio-base/util/Rpc";
 import { setupWorker } from "@foxglove/studio-base/util/RpcWorkerUtils";
 
 import { renderImage } from "./renderImage";
-import { Dimensions, RawMarkerData, RenderOptions } from "./util";
+import { Dimensions, idColorToIndex, RawMarkerData, RenderOptions } from "./util";
 
 class ImageCanvasWorker {
   private _idToCanvas: Record<string, OffscreenCanvas> = {};
+  private _idToHitmapCanvas: Record<string, OffscreenCanvas> = {};
 
   constructor(rpc: Rpc) {
     setupWorker(rpc);
@@ -30,11 +31,12 @@ class ImageCanvasWorker {
 
     rpc.receive("mouseMove", async ({ id, x, y }: { id: string; x: number; y: number }) => {
       const pixel = this._idToCanvas[id]?.getContext("2d")?.getImageData(x, y, 1, 1);
+      const hit = this._idToHitmapCanvas[id]?.getContext("2d")?.getImageData(x, y, 1, 1);
       if (pixel) {
         return {
           color: { r: pixel.data[0], g: pixel.data[1], b: pixel.data[2], a: pixel.data[3] },
           position: { x, y },
-          markerID: undefined,
+          markerID: hit ? idColorToIndex(hit?.data) : undefined,
         };
       } else {
         return undefined;
@@ -79,8 +81,17 @@ class ImageCanvasWorker {
           canvas.height = viewport.height;
         }
 
+        let hitmapCanvas = this._idToHitmapCanvas[id];
+        if (!hitmapCanvas) {
+          hitmapCanvas = this._idToHitmapCanvas[id] = new OffscreenCanvas(
+            canvas.width,
+            canvas.height,
+          );
+        }
+
         return renderImage({
           canvas,
+          hitmapCanvas,
           zoomMode,
           panZoom,
           imageMessage,

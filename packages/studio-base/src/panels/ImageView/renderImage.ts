@@ -11,6 +11,7 @@
 //   found at http://www.apache.org/licenses/LICENSE-2.0
 //   You may not use this file except in compliance with the License.
 
+import { HitmapRenderContext } from "@foxglove/studio-base/panels/ImageView/HitmapRenderContext";
 import { MessageEvent } from "@foxglove/studio-base/players/types";
 import {
   Image,
@@ -56,9 +57,12 @@ export const IMAGE_DATATYPES = [
 // one error, you'd then get a whole bunch more, which is spammy.
 let hasLoggedCameraModelError: boolean = false;
 
+type RenderableCanvas = HTMLCanvasElement | OffscreenCanvas;
+
 // Given a canvas, an image message, and marker info, render the image to the canvas.
 export async function renderImage({
   canvas,
+  hitmapCanvas,
   zoomMode,
   panZoom,
   imageMessage,
@@ -66,7 +70,8 @@ export async function renderImage({
   rawMarkerData,
   options,
 }: {
-  canvas: HTMLCanvasElement | OffscreenCanvas;
+  canvas: RenderableCanvas;
+  hitmapCanvas: OffscreenCanvas | undefined;
   zoomMode: "fit" | "fill" | "other";
   panZoom: { x: number; y: number; scale: number };
   imageMessage?: Image | CompressedImage;
@@ -99,7 +104,15 @@ export async function renderImage({
       canvas.height = bitmap.height;
     }
 
-    const dimensions = render({ canvas, zoomMode, panZoom, bitmap, imageSmoothing, markerData });
+    const dimensions = render({
+      canvas,
+      hitmapCanvas,
+      zoomMode,
+      panZoom,
+      bitmap,
+      imageSmoothing,
+      markerData,
+    });
     bitmap.close();
     return dimensions;
   } catch (error) {
@@ -200,13 +213,15 @@ function clearCanvas(canvas?: HTMLCanvasElement | OffscreenCanvas) {
 
 function render({
   canvas,
+  hitmapCanvas,
   zoomMode,
   panZoom,
   bitmap,
   imageSmoothing,
   markerData,
 }: {
-  canvas: HTMLCanvasElement | OffscreenCanvas;
+  canvas: RenderableCanvas;
+  hitmapCanvas: OffscreenCanvas | undefined;
   zoomMode: "fit" | "fill" | "other";
   panZoom: { x: number; y: number; scale: number };
   bitmap: ImageBitmap;
@@ -214,14 +229,13 @@ function render({
   markerData: MarkerData | undefined;
 }): Dimensions | undefined {
   const bitmapDimensions = { width: bitmap.width, height: bitmap.height };
-  const ctx = canvas.getContext("2d");
-  if (!ctx) {
+  const canvasCtx = canvas.getContext("2d");
+  if (!canvasCtx) {
     return;
   }
 
-  ctx.imageSmoothingEnabled = imageSmoothing;
+  canvasCtx.imageSmoothingEnabled = imageSmoothing;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   const { markers = [], cameraModel } = markerData ?? {};
 
   const viewportW = canvas.width;
@@ -244,6 +258,9 @@ function render({
   if (zoomMode === "other") {
     imageViewportScale = 1;
   }
+
+  const ctx = new HitmapRenderContext(canvasCtx, hitmapCanvas);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   ctx.save();
 
@@ -278,7 +295,7 @@ function render({
 }
 
 function paintMarkers(
-  ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
+  ctx: HitmapRenderContext,
   messages: MessageEvent<ImageMarker | ImageMarkerArray>[],
   cameraModel: PinholeCameraModel | undefined,
 ) {
@@ -301,10 +318,12 @@ function paintMarkers(
 }
 
 function paintMarker(
-  ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
+  ctx: HitmapRenderContext,
   marker: ImageMarker,
   cameraModel: PinholeCameraModel | undefined,
 ) {
+  ctx.startMarker(marker);
+
   switch (marker.type) {
     case ImageMarkerType.CIRCLE: {
       paintCircle(
@@ -442,7 +461,7 @@ function paintMarker(
 }
 
 function paintLine(
-  ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
+  ctx: HitmapRenderContext,
   pointA: Point2D,
   pointB: Point2D,
   thickness: number,
@@ -466,7 +485,7 @@ function paintLine(
 }
 
 function paintCircle(
-  ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
+  ctx: HitmapRenderContext,
   point: Point2D,
   radius: number,
   thickness: number,

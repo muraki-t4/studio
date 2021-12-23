@@ -218,7 +218,7 @@ export default function ImageCanvas(props: Props): JSX.Element {
         if (targetHeight !== canvas.height) {
           canvas.height = targetHeight;
         }
-        return renderImage(args);
+        return renderImage({ ...args, hitmapCanvas: undefined });
       };
 
       setDoRenderImage(() => renderInMain);
@@ -484,6 +484,7 @@ export default function ImageCanvas(props: Props): JSX.Element {
     const tempCanvas = document.createElement("canvas");
     void renderImage({
       canvas: tempCanvas,
+      hitmapCanvas: undefined,
       zoomMode: "other",
       panZoom: { x: 0, y: 0, scale: 1 },
       imageMessage,

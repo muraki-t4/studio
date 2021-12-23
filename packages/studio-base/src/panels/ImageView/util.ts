@@ -47,6 +47,31 @@ export type MarkerData = {
   cameraModel?: PinholeCameraModel; // undefined means no transformation is needed
 };
 
+function toPaddedHexString(n: number, length: number) {
+  const str = n.toString(16);
+  return "0".repeat(length - str.length) + str;
+}
+
+/**
+ * Converts an integer index into a hex color value. Used for encoding
+ * hitmaps.
+ */
+export function indexToIDColor(index: number): string {
+  return toPaddedHexString(index, 6);
+}
+
+/**
+ * Converts an encoded color back to an index value. Used for decoding hitmaps.
+ */
+export function idColorToIndex(id: Uint8ClampedArray): number | undefined {
+  // Treat pixels without max alpha as empty to avoid blended regions.
+  if (id.length < 4 || id[3] !== 255) {
+    return undefined;
+  }
+
+  return (id[0]! << 16) + (id[1]! << 8) + id[2]!;
+}
+
 export function getMarkerOptions(
   imageTopic: string,
   topics: readonly Topic[],
