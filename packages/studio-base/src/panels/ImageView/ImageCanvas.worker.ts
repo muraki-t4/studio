@@ -28,19 +28,20 @@ import {
   flattenImageMarkers,
   RawMarkerData,
   RenderOptions,
+  ZoomMode,
+  PanZoom,
 } from "./util";
 
+type RenderState = { canvas: OffscreenCanvas; hitmap: OffscreenCanvas; markers: ImageMarker[] };
+
 class ImageCanvasWorker {
-  private readonly _renderState: Record<
-    string,
-    { canvas: OffscreenCanvas; hitmap: OffscreenCanvas; markers: ImageMarker[] }
-  > = {};
+  private readonly _renderStates: Record<string, RenderState> = {};
 
   constructor(rpc: Rpc) {
     setupWorker(rpc);
 
     rpc.receive("initialize", async ({ id, canvas }: { id: string; canvas: OffscreenCanvas }) => {
-      this._renderState[id] = {
+      this._renderStates[id] = {
         canvas,
         hitmap: new OffscreenCanvas(canvas.width, canvas.height),
         markers: [],
@@ -48,8 +49,8 @@ class ImageCanvasWorker {
     });
 
     rpc.receive("mouseMove", async ({ id, x, y }: { id: string; x: number; y: number }) => {
-      const pixel = this._renderState[id]?.canvas?.getContext("2d")?.getImageData(x, y, 1, 1);
-      const hit = this._renderState[id]?.hitmap?.getContext("2d")?.getImageData(x, y, 1, 1);
+      const pixel = this._renderStates[id]?.canvas?.getContext("2d")?.getImageData(x, y, 1, 1);
+      const hit = this._renderStates[id]?.hitmap?.getContext("2d")?.getImageData(x, y, 1, 1);
       const markerIndex = hit ? idColorToIndex(hit?.data) : undefined;
       if (pixel) {
         return {
@@ -57,7 +58,7 @@ class ImageCanvasWorker {
           position: { x, y },
           markerIndex,
           marker:
-            markerIndex != undefined ? this._renderState[id]?.markers[markerIndex] : undefined,
+            markerIndex != undefined ? this._renderStates[id]?.markers[markerIndex] : undefined,
         };
       } else {
         return undefined;
@@ -70,9 +71,9 @@ class ImageCanvasWorker {
       // eslint-disable-next-line @typescript-eslint/promise-function-async
       (args: {
         id: string;
-        zoomMode: "fit" | "fill" | "other";
-        panZoom: { x: number; y: number; scale: number };
-        viewport: { width: number; height: number };
+        zoomMode: ZoomMode;
+        panZoom: PanZoom;
+        viewport: Dimensions;
         imageMessage?: Image | CompressedImage;
         imageMessageDatatype?: string;
         rawMarkerData: RawMarkerData;
@@ -89,7 +90,7 @@ class ImageCanvasWorker {
           options,
         } = args;
 
-        const render = this._renderState[id];
+        const render = this._renderStates[id];
         if (!render) {
           return Promise.resolve(undefined);
         }

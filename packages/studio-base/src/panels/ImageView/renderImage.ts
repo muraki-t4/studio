@@ -37,7 +37,15 @@ import {
   decodeMono8,
   decodeMono16,
 } from "./decodings";
-import { buildMarkerData, Dimensions, RawMarkerData, MarkerData, RenderOptions } from "./util";
+import {
+  buildMarkerData,
+  Dimensions,
+  RawMarkerData,
+  MarkerData,
+  RenderOptions,
+  PanZoom,
+  ZoomMode,
+} from "./util";
 
 const UNCOMPRESSED_IMAGE_DATATYPES = [
   "sensor_msgs/Image",
@@ -72,8 +80,8 @@ export async function renderImage({
 }: {
   canvas: RenderableCanvas;
   hitmapCanvas: OffscreenCanvas | undefined;
-  zoomMode: "fit" | "fill" | "other";
-  panZoom: { x: number; y: number; scale: number };
+  zoomMode: ZoomMode;
+  panZoom: PanZoom;
   imageMessage?: Image | CompressedImage;
   imageMessageDatatype?: string;
   rawMarkerData: RawMarkerData;
@@ -222,8 +230,8 @@ function render({
 }: {
   canvas: RenderableCanvas;
   hitmapCanvas: OffscreenCanvas | undefined;
-  zoomMode: "fit" | "fill" | "other";
-  panZoom: { x: number; y: number; scale: number };
+  zoomMode: ZoomMode;
+  panZoom: PanZoom;
   bitmap: ImageBitmap;
   imageSmoothing: boolean;
   markerData: MarkerData | undefined;
@@ -302,8 +310,8 @@ function paintMarkers(
   for (const { message } of messages) {
     ctx.save();
     try {
-      if (Array.isArray((message as Partial<ImageMarkerArray>).markers)) {
-        for (const marker of (message as ImageMarkerArray).markers) {
+      if ("markers" in message && Array.isArray(message.markers)) {
+        for (const marker of message.markers) {
           paintMarker(ctx, marker, cameraModel);
         }
       } else {

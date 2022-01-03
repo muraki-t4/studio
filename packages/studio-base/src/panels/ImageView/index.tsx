@@ -35,6 +35,7 @@ import { useMessagePipeline } from "@foxglove/studio-base/components/MessagePipe
 import Panel from "@foxglove/studio-base/components/Panel";
 import PanelToolbar from "@foxglove/studio-base/components/PanelToolbar";
 import useDeepMemo from "@foxglove/studio-base/hooks/useDeepMemo";
+import { Toolbar } from "@foxglove/studio-base/panels/ImageView/Toolbar";
 import { IMAGE_DATATYPES } from "@foxglove/studio-base/panels/ImageView/renderImage";
 import { MessageEvent } from "@foxglove/studio-base/players/types";
 import inScreenshotTests from "@foxglove/studio-base/stories/inScreenshotTests";
@@ -48,7 +49,6 @@ import toggle from "@foxglove/studio-base/util/toggle";
 
 import ImageCanvas from "./ImageCanvas";
 import ImageEmptyState from "./ImageEmptyState";
-import { PixelDataTooltip } from "./PixelDataTooltip";
 import helpContent from "./index.help.md";
 import {
   getCameraInfoTopic,
@@ -57,6 +57,7 @@ import {
   getMarkerOptions,
   groupTopics,
   PixelData,
+  ZoomMode,
 } from "./util";
 
 const { useMemo, useCallback } = React;
@@ -70,7 +71,7 @@ type DefaultConfig = {
 
 export type Config = DefaultConfig & {
   transformMarkers: boolean;
-  mode?: "fit" | "fill" | "other";
+  mode?: ZoomMode;
   smooth?: boolean;
   zoom?: number;
   pan?: { x: number; y: number };
@@ -635,7 +636,7 @@ function ImageView(props: Props) {
   const showEmptyState = !imageMessage || (shouldSynchronize && !synchronizedMessages);
 
   return (
-    <Flex col clip>
+    <Flex col clip style={{ position: "relative" }}>
       {toolbar}
       <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
         {/* Always render the ImageCanvas because it's expensive to unmount and start up. */}
@@ -661,9 +662,9 @@ function ImageView(props: Props) {
             />
           </div>
         )}
-        {activePixelData && <PixelDataTooltip data={activePixelData} />}
         {!showEmptyState && renderBottomBar()}
       </div>
+      <Toolbar pixelData={activePixelData} />
     </Flex>
   );
 }

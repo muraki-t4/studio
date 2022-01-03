@@ -32,7 +32,7 @@ import { getTimestampForMessage } from "@foxglove/studio-base/util/time";
 
 import { Config, SaveImagePanelConfig } from "./index";
 import { renderImage } from "./renderImage";
-import { Dimensions, PixelData, RawMarkerData, RenderOptions } from "./util";
+import { Dimensions, PixelData, RawMarkerData, RenderOptions, PanZoom, ZoomMode } from "./util";
 
 type OnFinishRenderImage = () => void;
 
@@ -148,9 +148,9 @@ const webWorkerManager = new WebWorkerManager(() => {
 
 type RenderImage = (args: {
   canvas: HTMLCanvasElement | OffscreenCanvas;
-  zoomMode: "fit" | "fill" | "other";
-  panZoom: { x: number; y: number; scale: number };
-  viewport: { width: number; height: number };
+  zoomMode: ZoomMode;
+  panZoom: PanZoom;
+  viewport: Dimensions;
   imageMessage?: Image | CompressedImage;
   imageMessageDatatype?: string;
   rawMarkerData: RawMarkerData;
@@ -516,7 +516,7 @@ export default function ImageCanvas(props: Props): JSX.Element {
     });
   }, [image, topic, renderOptions]);
 
-  function onCanvasMouseMove(event: MouseEvent<HTMLCanvasElement>) {
+  function onCanvasClick(event: MouseEvent<HTMLCanvasElement>) {
     const boundingRect = event.currentTarget.getBoundingClientRect();
     const x = event.clientX - boundingRect.x;
     const y = event.clientY - boundingRect.y;
@@ -548,7 +548,7 @@ export default function ImageCanvas(props: Props): JSX.Element {
         className={cx(classes.canvas, {
           [classes.canvasImageRenderingSmooth]: config.smooth === true,
         })}
-        onMouseMove={onCanvasMouseMove}
+        onClick={onCanvasClick}
         ref={canvasRef}
       />
       {contextMenuEvent && (

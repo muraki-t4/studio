@@ -16,6 +16,10 @@ import { CameraInfo, ImageMarker, ImageMarkerArray } from "@foxglove/studio-base
 
 import PinholeCameraModel from "./PinholeCameraModel";
 
+export type PanZoom = { x: number; y: number; scale: number };
+
+export type ZoomMode = "fit" | "fill" | "other";
+
 export type RenderOptions = {
   imageSmoothing?: boolean;
   minValue?: number;
@@ -146,10 +150,8 @@ export function flattenImageMarkers(
 ): ImageMarker[] {
   const markers: ImageMarker[] = [];
   for (const { message } of messages) {
-    if (Array.isArray((message as Partial<ImageMarkerArray>).markers)) {
-      for (const marker of (message as ImageMarkerArray).markers) {
-        markers.push(marker);
-      }
+    if ("markers" in message && Array.isArray(message.markers)) {
+      markers.push(...message.markers);
     } else {
       markers.push(message as ImageMarker);
     }
