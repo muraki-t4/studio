@@ -12,7 +12,7 @@
 //   You may not use this file except in compliance with the License.
 
 import { Topic, MessageEvent } from "@foxglove/studio-base/players/types";
-import { CameraInfo } from "@foxglove/studio-base/types/Messages";
+import { CameraInfo, ImageMarker, ImageMarkerArray } from "@foxglove/studio-base/types/Messages";
 
 import PinholeCameraModel from "./PinholeCameraModel";
 
@@ -31,7 +31,8 @@ export type Dimensions = { width: number; height: number };
 export type PixelData = {
   color: { r: number; g: number; b: number; a: number };
   position: { x: number; y: number };
-  markerID?: number;
+  markerIndex?: number;
+  marker?: ImageMarker;
 };
 
 export type RawMarkerData = {
@@ -138,6 +139,22 @@ export function groupTopics(topics: Topic[]): Map<string, Topic[]> {
     }
   }
   return imageTopicsByNamespace;
+}
+
+export function flattenImageMarkers(
+  messages: MessageEvent<ImageMarker | ImageMarkerArray>[],
+): ImageMarker[] {
+  const markers: ImageMarker[] = [];
+  for (const { message } of messages) {
+    if (Array.isArray((message as Partial<ImageMarkerArray>).markers)) {
+      for (const marker of (message as ImageMarkerArray).markers) {
+        markers.push(marker);
+      }
+    } else {
+      markers.push(message as ImageMarker);
+    }
+  }
+  return markers;
 }
 
 export function buildMarkerData(rawMarkerData: RawMarkerData): MarkerData | undefined {

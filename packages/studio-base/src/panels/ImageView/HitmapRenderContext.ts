@@ -26,13 +26,13 @@ export class HitmapRenderContext {
   }
 
   startMarker(marker: ImageMarker): void {
-    this._currentMarkerIndex++;
-    this._currentMarker = marker;
     if (this._hctx) {
-      const colorString = indexToIDColor(this._currentMarker.id);
+      const colorString = indexToIDColor(this._currentMarkerIndex);
       this._hctx.fillStyle = `#${colorString}ff`;
       this._hctx.strokeStyle = `#${colorString}ff`;
     }
+    this._currentMarker = marker;
+    this._currentMarkerIndex++;
   }
 
   // eslint-disable-next-line no-restricted-syntax

@@ -11,32 +11,53 @@
 //   found at http://www.apache.org/licenses/LICENSE-2.0
 //   You may not use this file except in compliance with the License.
 
-import { Image, CompressedImage } from "@foxglove/studio-base/types/Messages";
+import { MessageEvent } from "@foxglove/studio-base/players/types";
+import {
+  Image,
+  CompressedImage,
+  ImageMarker,
+  ImageMarkerArray,
+} from "@foxglove/studio-base/types/Messages";
 import Rpc, { Channel } from "@foxglove/studio-base/util/Rpc";
 import { setupWorker } from "@foxglove/studio-base/util/RpcWorkerUtils";
 
 import { renderImage } from "./renderImage";
-import { Dimensions, idColorToIndex, RawMarkerData, RenderOptions } from "./util";
+import {
+  Dimensions,
+  idColorToIndex,
+  flattenImageMarkers,
+  RawMarkerData,
+  RenderOptions,
+} from "./util";
 
 class ImageCanvasWorker {
-  private _idToCanvas: Record<string, OffscreenCanvas> = {};
-  private _idToHitmapCanvas: Record<string, OffscreenCanvas> = {};
+  private readonly _renderState: Record<
+    string,
+    { canvas: OffscreenCanvas; hitmap: OffscreenCanvas; markers: ImageMarker[] }
+  > = {};
 
   constructor(rpc: Rpc) {
     setupWorker(rpc);
 
     rpc.receive("initialize", async ({ id, canvas }: { id: string; canvas: OffscreenCanvas }) => {
-      this._idToCanvas[id] = canvas;
+      this._renderState[id] = {
+        canvas,
+        hitmap: new OffscreenCanvas(canvas.width, canvas.height),
+        markers: [],
+      };
     });
 
     rpc.receive("mouseMove", async ({ id, x, y }: { id: string; x: number; y: number }) => {
-      const pixel = this._idToCanvas[id]?.getContext("2d")?.getImageData(x, y, 1, 1);
-      const hit = this._idToHitmapCanvas[id]?.getContext("2d")?.getImageData(x, y, 1, 1);
+      const pixel = this._renderState[id]?.canvas?.getContext("2d")?.getImageData(x, y, 1, 1);
+      const hit = this._renderState[id]?.hitmap?.getContext("2d")?.getImageData(x, y, 1, 1);
+      const markerIndex = hit ? idColorToIndex(hit?.data) : undefined;
       if (pixel) {
         return {
           color: { r: pixel.data[0], g: pixel.data[1], b: pixel.data[2], a: pixel.data[3] },
           position: { x, y },
-          markerID: hit ? idColorToIndex(hit?.data) : undefined,
+          markerIndex,
+          marker:
+            markerIndex != undefined ? this._renderState[id]?.markers[markerIndex] : undefined,
         };
       } else {
         return undefined;
@@ -68,30 +89,29 @@ class ImageCanvasWorker {
           options,
         } = args;
 
-        const canvas = this._idToCanvas[id];
-        if (!canvas) {
+        const render = this._renderState[id];
+        if (!render) {
           return Promise.resolve(undefined);
         }
 
-        if (canvas.width !== viewport.width) {
-          canvas.width = viewport.width;
+        if (render.canvas.width !== viewport.width) {
+          render.canvas.width = viewport.width;
+          render.hitmap.width = viewport.width;
         }
 
-        if (canvas.height !== viewport.height) {
-          canvas.height = viewport.height;
+        if (render.canvas.height !== viewport.height) {
+          render.canvas.height = viewport.height;
+          render.hitmap.height = viewport.height;
         }
 
-        let hitmapCanvas = this._idToHitmapCanvas[id];
-        if (!hitmapCanvas) {
-          hitmapCanvas = this._idToHitmapCanvas[id] = new OffscreenCanvas(
-            canvas.width,
-            canvas.height,
-          );
-        }
+        // Flatten markers because we need to be able to index into them for hitmapping.
+        render.markers = flattenImageMarkers(
+          rawMarkerData.markers as MessageEvent<ImageMarker | ImageMarkerArray>[],
+        );
 
         return renderImage({
-          canvas,
-          hitmapCanvas,
+          canvas: render.canvas,
+          hitmapCanvas: render.hitmap,
           zoomMode,
           panZoom,
           imageMessage,

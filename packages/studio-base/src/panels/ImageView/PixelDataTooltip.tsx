@@ -21,8 +21,8 @@ export function PixelDataTooltip({ data }: { data: PixelData }): ReactElement {
       }}
     >
       <div>
-        <Typography variant="subtitle2">MarkerID</Typography>
-        {data.markerID ?? "-"}
+        <Typography variant="subtitle2">Marker Index</Typography>
+        {data.markerIndex ?? "-"}
       </div>
       <div>
         <Typography variant="subtitle2">Position</Typography>
@@ -40,6 +40,7 @@ export function PixelDataTooltip({ data }: { data: PixelData }): ReactElement {
           <div>A:{data.color.a}</div>
         </Stack>
       </div>
+      <div>{JSON.stringify(data.marker, undefined, 2)}</div>
     </Stack>
   );
 }
