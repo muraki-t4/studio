@@ -290,6 +290,7 @@ function RGBStory({ encoding }: { encoding: string }) {
       rawMarkerData={noMarkersMarkerData}
       config={config}
       saveConfig={noop}
+      setActivePixelData={noop}
       onStartRenderImage={() => () => undefined}
     />
   );
@@ -332,6 +333,7 @@ function BayerStory({ encoding }: { encoding: string }) {
       rawMarkerData={noMarkersMarkerData}
       config={config}
       saveConfig={noop}
+      setActivePixelData={noop}
       onStartRenderImage={() => () => undefined}
     />
   );
@@ -368,6 +370,7 @@ function Mono16Story({
       rawMarkerData={noMarkersMarkerData}
       config={{ ...config, minValue, maxValue }}
       saveConfig={noop}
+      setActivePixelData={noop}
       onStartRenderImage={() => () => undefined}
     />
   );
@@ -432,6 +435,7 @@ export const MarkersOriginal: Story = (_args) => {
         }}
         config={config}
         saveConfig={noop}
+        setActivePixelData={noop}
         onStartRenderImage={() => readySignal}
       />
     </div>
@@ -458,6 +462,7 @@ export const MarkersTransformed: Story = (_args) => {
         }}
         config={config}
         saveConfig={noop}
+        setActivePixelData={noop}
         onStartRenderImage={() => readySignal}
       />
     </div>
@@ -485,6 +490,7 @@ export const MarkersImageSize: Story = (_args) => {
         }}
         config={config}
         saveConfig={noop}
+        setActivePixelData={noop}
         onStartRenderImage={() => readySignal}
       />
     </div>
@@ -511,6 +517,7 @@ export const MarkersWithFallbackRenderingUsingMainThread = (): JSX.Element => {
         }}
         config={config}
         saveConfig={noop}
+        setActivePixelData={noop}
         renderInMainThread
         onStartRenderImage={() => () => undefined}
       />
@@ -526,6 +533,7 @@ export const MarkersWithFallbackRenderingUsingMainThread = (): JSX.Element => {
         }}
         config={config}
         saveConfig={noop}
+        setActivePixelData={noop}
         renderInMainThread
         onStartRenderImage={() => () => undefined}
       />
@@ -540,6 +548,7 @@ export const MarkersWithFallbackRenderingUsingMainThread = (): JSX.Element => {
         }}
         config={config}
         saveConfig={noop}
+        setActivePixelData={noop}
         renderInMainThread
         onStartRenderImage={() => () => undefined}
       />
@@ -560,6 +569,7 @@ export const ErrorState = (): JSX.Element => {
       rawMarkerData={noMarkersMarkerData}
       config={config}
       saveConfig={noop}
+      setActivePixelData={noop}
       onStartRenderImage={() => () => undefined}
     />
   );
@@ -581,6 +591,7 @@ export const CallsOnRenderFrameWhenRenderingSucceeds = (): JSX.Element => {
           }}
           config={config}
           saveConfig={noop}
+          setActivePixelData={noop}
           onStartRenderImage={onStartRenderImage}
         />
       )}
@@ -603,6 +614,7 @@ export const CallsOnRenderFrameWhenRenderingFails = (): JSX.Element => {
           rawMarkerData={noMarkersMarkerData}
           config={config}
           saveConfig={noop}
+          setActivePixelData={noop}
           onStartRenderImage={onStartRenderImage}
         />
       )}

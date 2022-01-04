@@ -27,6 +27,7 @@ import {
   idColorToIndex,
   flattenImageMarkers,
   RawMarkerData,
+  RenderDimensions,
   RenderOptions,
   PanZoom,
   ZoomMode,
@@ -34,11 +35,9 @@ import {
 
 type RenderState = {
   canvas: OffscreenCanvas;
+  dimensions?: RenderDimensions;
   hitmap: OffscreenCanvas;
   markers: ImageMarker[];
-  panZoom: PanZoom;
-  viewport: Dimensions;
-  zoomMode: ZoomMode;
 };
 
 class ImageCanvasWorker {
@@ -52,9 +51,6 @@ class ImageCanvasWorker {
         canvas,
         hitmap: new OffscreenCanvas(canvas.width, canvas.height),
         markers: [],
-        panZoom: { x: 0, y: 0, scale: 1 },
-        viewport: { width: 1, height: 1 },
-        zoomMode: "fill",
       };
     });
 
@@ -64,6 +60,8 @@ class ImageCanvasWorker {
         return undefined;
       }
 
+      const matrix = (state.dimensions?.transform ?? new DOMMatrix()).inverse();
+      const point = new DOMPoint(x, y).matrixTransform(matrix);
       const pixel = state.canvas.getContext("2d")?.getImageData(x, y, 1, 1);
       const hit = state.hitmap.getContext("2d")?.getImageData(x, y, 1, 1);
       const markerIndex = hit ? idColorToIndex(hit.data) : undefined;
@@ -71,7 +69,7 @@ class ImageCanvasWorker {
       if (pixel) {
         return {
           color: { r: pixel.data[0], g: pixel.data[1], b: pixel.data[2], a: pixel.data[3] },
-          position: { x, y },
+          position: { x: Math.round(point.x), y: Math.round(point.y) },
           markerIndex,
           marker: markerIndex != undefined ? state.markers[markerIndex] : undefined,
         };
@@ -93,7 +91,7 @@ class ImageCanvasWorker {
         imageMessageDatatype?: string;
         rawMarkerData: RawMarkerData;
         options: RenderOptions;
-      }): Promise<Dimensions | undefined> => {
+      }): Promise<RenderDimensions | undefined> => {
         const {
           id,
           zoomMode,
@@ -124,9 +122,6 @@ class ImageCanvasWorker {
         render.markers = flattenImageMarkers(
           rawMarkerData.markers as MessageEvent<ImageMarker | ImageMarkerArray>[],
         );
-        render.panZoom = panZoom;
-        render.viewport = viewport;
-        render.zoomMode = zoomMode;
 
         return renderImage({
           canvas: render.canvas,
@@ -137,7 +132,7 @@ class ImageCanvasWorker {
           imageMessageDatatype,
           rawMarkerData,
           options,
-        });
+        }).then((dimensions) => (render.dimensions = dimensions));
       },
     );
   }

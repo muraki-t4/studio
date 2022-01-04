@@ -40,9 +40,9 @@ import {
 import {
   buildMarkerData,
   calculateZoomScale,
-  Dimensions,
   RawMarkerData,
   MarkerData,
+  RenderDimensions,
   RenderOptions,
   PanZoom,
   ZoomMode,
@@ -87,7 +87,7 @@ export async function renderImage({
   imageMessageDatatype?: string;
   rawMarkerData: RawMarkerData;
   options?: RenderOptions;
-}): Promise<Dimensions | undefined> {
+}): Promise<RenderDimensions | undefined> {
   if (!imageMessage || imageMessageDatatype == undefined) {
     clearCanvas(canvas);
     return undefined;
@@ -236,7 +236,7 @@ function render({
   bitmap: ImageBitmap;
   imageSmoothing: boolean;
   markerData: MarkerData | undefined;
-}): Dimensions | undefined {
+}): RenderDimensions | undefined {
   const bitmapDimensions = { width: bitmap.width, height: bitmap.height };
   const canvasCtx = canvas.getContext("2d");
   if (!canvasCtx) {
@@ -276,6 +276,7 @@ function render({
   // These dimensions are used to scale the markers positions separately from the bitmap size
   const { originalWidth = bitmap.width, originalHeight = bitmap.height } = markerData ?? {};
   ctx.scale(bitmap.width / originalWidth, bitmap.height / originalHeight);
+  const transform = ctx.getTransform();
 
   try {
     paintMarkers(ctx, markers as MessageEvent<ImageMarker | ImageMarkerArray>[], cameraModel);
@@ -284,7 +285,8 @@ function render({
   } finally {
     ctx.restore();
   }
-  return bitmapDimensions;
+
+  return { ...bitmapDimensions, transform };
 }
 
 function paintMarkers(
@@ -315,7 +317,7 @@ function paintMarker(
   marker: ImageMarker,
   cameraModel: PinholeCameraModel | undefined,
 ) {
-  ctx.startMarker(marker);
+  ctx.startMarker();
 
   switch (marker.type) {
     case ImageMarkerType.CIRCLE: {

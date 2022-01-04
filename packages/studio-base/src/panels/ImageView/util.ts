@@ -45,6 +45,8 @@ export type RawMarkerData = {
   cameraInfo?: CameraInfo;
 };
 
+export type RenderDimensions = Dimensions & { transform: DOMMatrix };
+
 export type MarkerData = {
   markers: MessageEvent<unknown>[];
   originalWidth?: number; // undefined means no scaling is needed (use the image's size)

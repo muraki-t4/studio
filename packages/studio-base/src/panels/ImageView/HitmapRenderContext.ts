@@ -3,7 +3,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import { indexToIDColor } from "@foxglove/studio-base/panels/ImageView/util";
-import { ImageMarker } from "@foxglove/studio-base/types/Messages";
 
 /**
  * This wraps a canvas rendering context to also render all context commands in parallel
@@ -11,7 +10,6 @@ import { ImageMarker } from "@foxglove/studio-base/types/Messages";
  */
 export class HitmapRenderContext {
   private _currentMarkerIndex: number = 0;
-  private _currentMarker: ImageMarker | undefined;
   private readonly _hctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | undefined;
 
   constructor(
@@ -25,13 +23,12 @@ export class HitmapRenderContext {
     }
   }
 
-  startMarker(marker: ImageMarker): void {
+  startMarker(): void {
     if (this._hctx) {
       const colorString = indexToIDColor(this._currentMarkerIndex);
       this._hctx.fillStyle = `#${colorString}ff`;
       this._hctx.strokeStyle = `#${colorString}ff`;
     }
-    this._currentMarker = marker;
     this._currentMarkerIndex++;
   }
 
@@ -140,6 +137,10 @@ export class HitmapRenderContext {
   fillText(text: string, x: number, y: number): void {
     this._ctx.fillText(text, x, y);
     this._hctx?.fillText(text, x, y);
+  }
+
+  getTransform(): DOMMatrix {
+    return this._ctx.getTransform();
   }
 
   lineTo(x: number, y: number): void {
