@@ -28,11 +28,18 @@ import {
   flattenImageMarkers,
   RawMarkerData,
   RenderOptions,
-  ZoomMode,
   PanZoom,
+  ZoomMode,
 } from "./util";
 
-type RenderState = { canvas: OffscreenCanvas; hitmap: OffscreenCanvas; markers: ImageMarker[] };
+type RenderState = {
+  canvas: OffscreenCanvas;
+  hitmap: OffscreenCanvas;
+  markers: ImageMarker[];
+  panZoom: PanZoom;
+  viewport: Dimensions;
+  zoomMode: ZoomMode;
+};
 
 class ImageCanvasWorker {
   private readonly _renderStates: Record<string, RenderState> = {};
@@ -45,20 +52,28 @@ class ImageCanvasWorker {
         canvas,
         hitmap: new OffscreenCanvas(canvas.width, canvas.height),
         markers: [],
+        panZoom: { x: 0, y: 0, scale: 1 },
+        viewport: { width: 1, height: 1 },
+        zoomMode: "fill",
       };
     });
 
     rpc.receive("mouseMove", async ({ id, x, y }: { id: string; x: number; y: number }) => {
-      const pixel = this._renderStates[id]?.canvas?.getContext("2d")?.getImageData(x, y, 1, 1);
-      const hit = this._renderStates[id]?.hitmap?.getContext("2d")?.getImageData(x, y, 1, 1);
-      const markerIndex = hit ? idColorToIndex(hit?.data) : undefined;
+      const state = this._renderStates[id];
+      if (!state) {
+        return undefined;
+      }
+
+      const pixel = state.canvas.getContext("2d")?.getImageData(x, y, 1, 1);
+      const hit = state.hitmap.getContext("2d")?.getImageData(x, y, 1, 1);
+      const markerIndex = hit ? idColorToIndex(hit.data) : undefined;
+
       if (pixel) {
         return {
           color: { r: pixel.data[0], g: pixel.data[1], b: pixel.data[2], a: pixel.data[3] },
           position: { x, y },
           markerIndex,
-          marker:
-            markerIndex != undefined ? this._renderStates[id]?.markers[markerIndex] : undefined,
+          marker: markerIndex != undefined ? state.markers[markerIndex] : undefined,
         };
       } else {
         return undefined;
@@ -109,6 +124,9 @@ class ImageCanvasWorker {
         render.markers = flattenImageMarkers(
           rawMarkerData.markers as MessageEvent<ImageMarker | ImageMarkerArray>[],
         );
+        render.panZoom = panZoom;
+        render.viewport = viewport;
+        render.zoomMode = zoomMode;
 
         return renderImage({
           canvas: render.canvas,

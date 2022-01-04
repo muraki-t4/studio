@@ -52,6 +52,32 @@ export type MarkerData = {
   cameraModel?: PinholeCameraModel; // undefined means no transformation is needed
 };
 
+export function calculateZoomScale(
+  bitmap: Dimensions,
+  viewport: Dimensions,
+  zoomMode: ZoomMode,
+): number {
+  let imageViewportScale = viewport.width / bitmap.width;
+
+  const calculatedHeight = bitmap.height * imageViewportScale;
+
+  // if we are trying to fit and the height exeeds viewport, we need to scale on height
+  if (zoomMode === "fit" && calculatedHeight > viewport.height) {
+    imageViewportScale = viewport.height / bitmap.height;
+  }
+
+  // if we are trying to fill and the height doesn't fill viewport, we need to scale on height
+  if (zoomMode === "fill" && calculatedHeight < viewport.height) {
+    imageViewportScale = viewport.height / bitmap.height;
+  }
+
+  if (zoomMode === "other") {
+    imageViewportScale = 1;
+  }
+
+  return imageViewportScale;
+}
+
 function toPaddedHexString(n: number, length: number) {
   const str = n.toString(16);
   return "0".repeat(length - str.length) + str;

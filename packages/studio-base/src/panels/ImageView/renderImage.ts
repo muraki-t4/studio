@@ -39,6 +39,7 @@ import {
 } from "./decodings";
 import {
   buildMarkerData,
+  calculateZoomScale,
   Dimensions,
   RawMarkerData,
   MarkerData,
@@ -249,23 +250,7 @@ function render({
   const viewportW = canvas.width;
   const viewportH = canvas.height;
 
-  let imageViewportScale = viewportW / bitmap.width;
-
-  const calculatedHeight = bitmap.height * imageViewportScale;
-
-  // if we are trying to fit and the height exeeds viewport, we need to scale on height
-  if (zoomMode === "fit" && calculatedHeight > viewportH) {
-    imageViewportScale = viewportH / bitmap.height;
-  }
-
-  // if we are trying to fill and the height doesn't fill viewport, we need to scale on height
-  if (zoomMode === "fill" && calculatedHeight < viewportH) {
-    imageViewportScale = viewportH / bitmap.height;
-  }
-
-  if (zoomMode === "other") {
-    imageViewportScale = 1;
-  }
+  const imageViewportScale = calculateZoomScale(bitmap, canvas, zoomMode);
 
   const ctx = new HitmapRenderContext(canvasCtx, hitmapCanvas);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
