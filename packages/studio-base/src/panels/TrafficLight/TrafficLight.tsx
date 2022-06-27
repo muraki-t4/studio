@@ -11,14 +11,13 @@
 //   found at http://www.apache.org/licenses/LICENSE-2.0
 //   You may not use this file except in compliance with the License.
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { last } from "lodash";
 
-import { PanelExtensionContext } from "@foxglove/studio";
+import { PanelExtensionContext, SettingsTreeAction, SettingsTreeNodes } from "@foxglove/studio";
 import Stack from "@foxglove/studio-base/components/Stack";
 
 import { Config } from './types';
-
 import GreenLight from './svg/Green.svg';
 import YellowLight from './svg/Yellow.svg';
 import RedLight from './svg/Red.svg';
@@ -38,30 +37,64 @@ function TrafficLight(props: TrafficLightProps) {
   );
 }
 
-type Props = {
+type TrafficLightPanelProps = {
   context: PanelExtensionContext;
 };
 
+function buildSettingsTree(config: Config): SettingsTreeNodes {
+  return {
+    general: {
+      label: "General",
+      icon: "Settings",
+      fields: {
+        topicName: { label: "Topic Name", input: "string", value: config.topicName },
+        trafficLightId: { label: "Traffic Light Id", input: "number", value: config.trafficLightId },
+      },
+    },
+  };
+}
 
-function TrafficLightPanel({ context }: Props): React.ReactElement {
 
-  const topicName = "/traffic_light_time_manager/traffic_light_states";
-  const trafficLightId = 531;
+function TrafficLightPanel({ context }: TrafficLightPanelProps): React.ReactElement {
+
+  const [config, setConfig] = useState<Config>(() => {
+    const partialConfig = context.initialState as Partial<Config>;
+    return {
+      trafficLightId: partialConfig.trafficLightId ?? 0,
+      topicName: partialConfig.topicName ?? "",
+    };
+  });
 
   const [renderDone, setRenderDone] = useState<() => void>(() => () => {});
   const [trafficLightType, setTrafficLightType] = useState<number>(0);
+
+  const actionHandler = useCallback((action: SettingsTreeAction) => {
+    if (action.action !== "update") {
+      return;
+    }
+    const { path, input, value } = action.payload;
+    if (path[1] === "topicName" && input === "string") {
+      setConfig((prev) => ({ ...prev, topicName: String(value) }));
+    }
+    if (path[1] === "trafficLightId" && input === "number") {
+      setConfig((prev) => ({ ...prev, trafficLightId: Number(value) }));
+    }
+  }, []);
 
   useEffect(() => {
     context.onRender = (renderState, done) => {
       setRenderDone(() => done);
       const message = last(renderState.currentFrame);
-      if (message != undefined && message.topic === topicName) {
-        if (trafficLightId) {
-          const lastMessage: any = message.message;
-          const state = lastMessage.states.find((state: any) => state.id === trafficLightId);
+      if (message != undefined && message.topic === config?.topicName) {
+        // FIXME: Change topic type std_msgs/UInt32 to autoware_perception_msgs/TrafficLightState.msg
+        const lastMessage: any = message.message;
+        if (config?.trafficLightId > 0) {
+          const state = lastMessage.states.find((state: any) => state.id === config.trafficLightId);
           if (state && state.lamp_states.length > 0) {
             setTrafficLightType(state.lamp_states[0].type);
           }
+        } else {
+          setTrafficLightType(lastMessage.data);
         }
       }
     };
@@ -71,15 +104,20 @@ function TrafficLightPanel({ context }: Props): React.ReactElement {
     return () => {
       context.onRender = undefined;
     };
-  }, [context, topicName, trafficLightId]);
-
+  }, [context, config]);
 
   useEffect(() => {
-    if (topicName != undefined) {
-      context.subscribe([topicName]);
+    context.updatePanelSettingsEditor({
+      actionHandler,
+      nodes: buildSettingsTree(config),
+    });
+
+    if (config.topicName != undefined) {
+      context.subscribe([config.topicName]);
     }
     return () => context.unsubscribeAll();
-  }, [context, topicName]);
+  }, [config, context, actionHandler]);
+
 
   useEffect(() => {
     renderDone();
