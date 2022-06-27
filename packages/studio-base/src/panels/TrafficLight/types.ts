@@ -6,3 +6,18 @@ export type Config = {
   trafficLightId: number;
   topicName: string;
 };
+
+export type LampState = {
+  type: number;
+  confidence: number;
+}
+
+export type TrafficLightState = {
+  id: number;
+  lamp_states: LampState[];
+}
+
+export type TrafficLightStateArray = {
+  header: unknown;
+  states: TrafficLightState[];
+}
