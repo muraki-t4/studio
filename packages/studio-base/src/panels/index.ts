@@ -46,6 +46,7 @@ import DiagnosticStatusPanelHelp from "./diagnostics/DiagnosticStatusPanel.help.
 import DiagnosticSummaryHelp from "./diagnostics/DiagnosticSummary.help.md";
 import diagnosticStatusThumbnail from "./diagnostics/thumbnails/diagnostic-status.png";
 import diagnosticSummaryThumbnail from "./diagnostics/thumbnails/diagnostic-summary.png";
+import TrafficLightHelp from "./TrafficLight/index.help.md";
 
 const builtin: PanelInfo[] = [
   {
@@ -217,6 +218,17 @@ const builtin: PanelInfo[] = [
   },
 ];
 
+const additional: PanelInfo[] = [
+  {
+    title: "Traffic Light",
+    type: "TrafficLight",
+    description: "Display traffic light color.",
+    help: TrafficLightHelp,
+    module: async () => await import("./TrafficLight"),
+  },
+];
+
+
 const debug: PanelInfo[] = [
   {
     title: "Studio - Playback Performance",
@@ -242,4 +254,4 @@ const legacyPlot: PanelInfo[] = [
   },
 ];
 
-export default { builtin, debug, legacyPlot };
+export default { builtin, additional, debug, legacyPlot };
