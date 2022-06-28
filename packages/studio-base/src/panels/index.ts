@@ -46,6 +46,7 @@ import DiagnosticStatusPanelHelp from "./diagnostics/DiagnosticStatusPanel.help.
 import DiagnosticSummaryHelp from "./diagnostics/DiagnosticSummary.help.md";
 import diagnosticStatusThumbnail from "./diagnostics/thumbnails/diagnostic-status.png";
 import diagnosticSummaryThumbnail from "./diagnostics/thumbnails/diagnostic-summary.png";
+import InstrumentHelp from "./Instrument/index.help.md";
 import TrafficLightHelp from "./TrafficLight/index.help.md";
 
 const builtin: PanelInfo[] = [
@@ -219,6 +220,13 @@ const builtin: PanelInfo[] = [
 ];
 
 const additional: PanelInfo[] = [
+  {
+    title: "Instrument",
+    type: "Instrument",
+    description: "Display speed and blinker status.",
+    help: InstrumentHelp,
+    module: async () => await import("./Instrument"),
+  },
   {
     title: "Traffic Light",
     type: "TrafficLight",
