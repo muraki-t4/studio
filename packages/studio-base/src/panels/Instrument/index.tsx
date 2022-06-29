@@ -20,7 +20,7 @@ import PanelExtensionAdapter from "@foxglove/studio-base/components/PanelExtensi
 import ThemeProvider from "@foxglove/studio-base/theme/ThemeProvider";
 import { SaveConfig } from "@foxglove/studio-base/types/panels";
 
-// import InstrumentPanel from "./Instrument";
+import InstrumentPanel from "./Instrument";
 import helpContent from "./index.help.md";
 import { Config } from "./types";
 
@@ -29,7 +29,7 @@ function initPanel(context: PanelExtensionContext) {
   ReactDOM.render(
     <StrictMode>
       <ThemeProvider isDark>
-        {/* <InstrumentPanel context={context} /> */}
+        <InstrumentPanel context={context} />
       </ThemeProvider>
     </StrictMode>,
     context.panelElement,

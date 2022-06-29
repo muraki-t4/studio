@@ -96,17 +96,17 @@ function buildSettingsTree(config: Config): SettingsTreeNodes {
       label: "Speed",
       icon: "Settings",
       fields: {
-        topicName: { label: "Topic Name", input: "string", value: config.speed.topic },
+        topic: { label: "Topic Name", input: "string", value: config.speed.topic },
       },
     },
     blinker: {
       label: "Blinker",
       icon: "Settings",
       fields: {
-        topicName: { label: "Topic Name", input: "string", value: config.blinker.topic },
-        leftValue: { label: "Left Value", input: "number", value: config.blinker.left },
-        rightValue: { label: "Right Value", input: "number", value: config.blinker.right },
-        bothValue: { label: "Both Value", input: "number", value: config.blinker.both },
+        topic: { label: "Topic Name", input: "string", value: config.blinker.topic },
+        left: { label: "Left Value", input: "number", value: config.blinker.left },
+        right: { label: "Right Value", input: "number", value: config.blinker.right },
+        both: { label: "Both Value", input: "number", value: config.blinker.both },
       },
     },
   };
@@ -119,12 +119,12 @@ function InstrumentPanel({ context }: InstrumentPanelProps): React.ReactElement 
     const partialConfig = context.initialState as Partial<Config>;
     return {
       speed: {
-        topic: partialConfig.speed?.topic ?? ""
+        topic: partialConfig.speed?.topic ?? "/can_info"
       },
       blinker: {
-        topic: partialConfig.blinker?.topic ?? "",
-        left: partialConfig.blinker?.left ?? 0,
-        right: partialConfig.blinker?.right ?? 0,
+        topic: partialConfig.blinker?.topic ?? "/can_info",
+        left: partialConfig.blinker?.left ?? 16,
+        right: partialConfig.blinker?.right ?? 32,
         both: partialConfig.blinker?.both ?? 0,
       },
     };
@@ -140,20 +140,41 @@ function InstrumentPanel({ context }: InstrumentPanelProps): React.ReactElement 
       return;
     }
     const { path, value } = action.payload;
+    console.log(path);
     if (path[0] === "speed" && path[1] === "topic") {
-      setConfig((prev) => ({ ...prev, blinker: { ...prev.blinker, topic: String(value) } }));
+      setConfig((prev) => {
+        let speed = { ...prev.speed };
+        speed.topic = String(value);
+        return { ...prev, speed };
+      });
     }
     if (path[0] === "blinker" && path[1] === "topic") {
-      setConfig((prev) => ({ ...prev, blinker: { ...prev.blinker, topic: String(value) } }));
+      setConfig((prev) => {
+        let blinker = { ...prev.blinker };
+        blinker.topic = String(value);
+        return { ...prev, blinker };
+      });
     }
     if (path[0] === "blinker" && path[1] === "left") {
-      setConfig((prev) => ({ ...prev, blinker: { ...prev.blinker, left: Number(value) } }));
+      setConfig((prev) => {
+        let blinker = { ...prev.blinker };
+        blinker.left = Number(value);
+        return { ...prev, blinker };
+      });
     }
     if (path[0] === "blinker" && path[1] === "right") {
-      setConfig((prev) => ({ ...prev, blinker: { ...prev.blinker, right: Number(value) } }));
+      setConfig((prev) => {
+        let blinker = { ...prev.blinker };
+        blinker.right = Number(value);
+        return { ...prev, blinker };
+      });
     }
     if (path[0] === "blinker" && path[1] === "both") {
-      setConfig((prev) => ({ ...prev, blinker: { ...prev.blinker, both: Number(value) } }));
+      setConfig((prev) => {
+        let blinker = { ...prev.blinker };
+        blinker.both = Number(value);
+        return { ...prev, blinker };
+      });
     }
 
   }, []);
@@ -168,8 +189,8 @@ function InstrumentPanel({ context }: InstrumentPanelProps): React.ReactElement 
           setSpeed(lastMessage.speed);
         }
         if (message.topic === config.blinker.topic) {
-          setLeftBlinker(lastMessage.strmode in [config.blinker.left, config.blinker.both]);
-          setRightBlinker(lastMessage.strmode in [config.blinker.right, config.blinker.both]);
+          setLeftBlinker([config.blinker.left, config.blinker.both].includes(lastMessage?.strmode));
+          setRightBlinker([config.blinker.right, config.blinker.both].includes(lastMessage?.strmode));
         }
       }
     };
